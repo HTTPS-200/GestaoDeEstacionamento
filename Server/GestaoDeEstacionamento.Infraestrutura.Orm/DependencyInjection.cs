@@ -1,7 +1,9 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
+using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
         {
             //services.AddScoped
             services.AddScoped<IRepositorioFatura, RepositorioFaturaEmOrm>();
+            services.AddScoped<IRepositorioVaga, RepositorioVagaEmOrm>();
             services.AddEntityFrameworkConfig(configuration);
 
             return services;
