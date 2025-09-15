@@ -10,6 +10,7 @@ public class Veiculo : EntidadeBase<Veiculo>
     public string CpfHospede { get; set; }
     public string? Observacoes { get; set; }
     public DateTime DataEntrada { get; set; }
+    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
     public override void AtualizarRegistro(Veiculo registroEditado)
     {
