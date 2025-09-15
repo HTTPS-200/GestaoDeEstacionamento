@@ -24,6 +24,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
         public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Vaga> Vaga { get; set; }
+        public DbSet<Veiculo> Veiculos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +43,9 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
                     .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<RelatorioFinanceiro>()
+                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
+
+                modelBuilder.Entity<Veiculo>()
                     .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
 
             }

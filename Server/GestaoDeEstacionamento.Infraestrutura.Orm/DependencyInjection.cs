@@ -26,6 +26,8 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
             services.AddScoped<IRepositorioSaida, RepositorioSaidaEmOrm>();
             services.AddScoped<IRepositorioTicket, RepositorioChekInEmOrm>();
             services.AddScoped<IRepositorioRelatorioFinanceiro, RepositorioRelatorioFinanceiroEmOrm>();
+            services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
+
             services.AddEntityFrameworkConfig(configuration);
 
             return services;
