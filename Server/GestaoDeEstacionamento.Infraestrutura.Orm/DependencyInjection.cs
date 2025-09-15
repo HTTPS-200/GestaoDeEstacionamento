@@ -1,17 +1,14 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloCheckIn;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloSaidaLiberacao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm
 {
@@ -22,6 +19,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
             //services.AddScoped
             services.AddScoped<IRepositorioFatura, RepositorioFaturaEmOrm>();
             services.AddScoped<IRepositorioSaida, RepositorioSaidaEmOrm>();
+            services.AddScoped<IRepositorioTicket, RepositorioChekInEmOrm>();
             services.AddEntityFrameworkConfig(configuration);
 
             return services;

@@ -1,5 +1,6 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
         // add public DbSet para módulos adicionados
         public DbSet<Fatura> Fatura { get; set; }
         public DbSet<Saida> Saida { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +30,9 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 
                 modelBuilder.Entity<Saida>()
                     .HasQueryFilter(x => x.TicketId.Equals(tenantProvider.UsuarioId));
+
+                modelBuilder.Entity<Ticket>()
+                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
 
             }
 
