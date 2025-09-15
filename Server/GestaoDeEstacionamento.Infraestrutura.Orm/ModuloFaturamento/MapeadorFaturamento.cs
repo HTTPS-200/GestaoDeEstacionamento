@@ -14,8 +14,8 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento
         public void Configure(EntityTypeBuilder<Fatura> builder)
         {
             builder.Property(x => x.Id)
-                .ValueGeneratedNever()
-                .IsRequired();
+           .ValueGeneratedNever()
+           .IsRequired();
 
             builder.Property(x => x.DataEntrada)
                 .IsRequired();
@@ -26,13 +26,25 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento
             builder.Property(x => x.NumeroDiarias)
                 .IsRequired();
 
+            builder.Property(x => x.ValorDiaria)
+                .HasColumnType("decimal(18,2)")
+                .IsRequired();
+
             builder.Property(x => x.ValorTotal)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
+            builder.Property(x => x.Pago)
+                .IsRequired();
+
             builder.HasOne(x => x.TicketId)
                 .WithMany()
-                .HasForeignKey("TicketId") 
+                .HasForeignKey("TicketId")
+                .IsRequired();
+
+            builder.HasOne(x => x.VeiculoId)
+                .WithMany()
+                .HasForeignKey("VeiculoId")
                 .IsRequired();
 
             builder.HasIndex(x => x.Id)

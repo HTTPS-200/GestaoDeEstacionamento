@@ -14,7 +14,10 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga
         public void Configure(EntityTypeBuilder<Vaga> builder)
         {
             builder.Property(x => x.Id)
-                .ValueGeneratedNever()
+             .ValueGeneratedNever()
+             .IsRequired();
+
+            builder.Property(x => x.NumeroDaVaga)
                 .IsRequired();
 
             builder.Property(x => x.Zona)
@@ -23,6 +26,9 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga
             builder.Property(x => x.Ocupada)
                 .IsRequired();
 
+            builder.HasOne(x => x.VeiculoEstacionado)
+                .WithMany()
+                .HasForeignKey("VeiculoEstacionadoId");
 
             builder.HasIndex(x => x.Id)
                 .IsUnique();
