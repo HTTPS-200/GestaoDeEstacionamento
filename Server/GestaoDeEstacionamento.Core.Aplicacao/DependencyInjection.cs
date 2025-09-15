@@ -7,73 +7,76 @@ using Serilog.Events;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao
 {
-    public static IServiceCollection AddCamadaAplicacao(
-       this IServiceCollection services,
-       ILoggingBuilder logging,
-       IConfiguration configuration
-   )
+    public static class DependencyInjection
     {
-        services.AddSerilogConfig(logging, configuration);
-
-        var assembly = typeof(DependencyInjection).Assembly;
-
-        var licenseKey = configuration["AUTOMAPPER_LICENSE_KEY"];
-
-        if (string.IsNullOrWhiteSpace(licenseKey))
-            throw new Exception("A variável AUTOMAPPER_LICENSE_KEY não foi fornecida.");
-
-        services.AddMediatR(config =>
+        public static IServiceCollection AddCamadaAplicacao(
+           this IServiceCollection services,
+           ILoggingBuilder logging,
+           IConfiguration configuration
+       )
         {
-            config.RegisterServicesFromAssembly(assembly);
+            services.AddSerilogConfig(logging, configuration);
 
-            config.LicenseKey = licenseKey;
-        });
+            var assembly = typeof(DependencyInjection).Assembly;
 
-        services.AddAutoMapper(config =>
+            var licenseKey = configuration["AUTOMAPPER_LICENSE_KEY"];
+
+            if (string.IsNullOrWhiteSpace(licenseKey))
+                throw new Exception("A variável AUTOMAPPER_LICENSE_KEY não foi fornecida.");
+
+            services.AddMediatR(config =>
+            {
+                config.RegisterServicesFromAssembly(assembly);
+
+                config.LicenseKey = licenseKey;
+            });
+
+            services.AddAutoMapper(config =>
+            {
+                config.LicenseKey = licenseKey;
+            }, assembly);
+
+            services.AddValidatorsFromAssembly(assembly);
+
+            var redisConnectionString = configuration["REDIS_CONNECTION_STRING"];
+
+            if (string.IsNullOrWhiteSpace(redisConnectionString))
+                throw new Exception("A variável REDIS_CONNECTION_STRING não foi fornecida.");
+
+            services.AddStackExchangeRedisCache(opt =>
+            {
+                opt.Configuration = redisConnectionString;
+                opt.InstanceName = "GestaoDeEstacionamento";
+            });
+
+            return services;
+        }
+
+        private static void AddSerilogConfig(this IServiceCollection services, ILoggingBuilder logging, IConfiguration configuration)
         {
-            config.LicenseKey = licenseKey;
-        }, assembly);
+            var licenseKey = configuration["NEWRELIC_LICENSE_KEY"];
 
-        services.AddValidatorsFromAssembly(assembly);
+            if (string.IsNullOrWhiteSpace(licenseKey))
+                throw new Exception("A variável NEWRELIC_LICENSE_KEY não foi fornecida.");
 
-        var redisConnectionString = configuration["REDIS_CONNECTION_STRING"];
+            var caminhoAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        if (string.IsNullOrWhiteSpace(redisConnectionString))
-            throw new Exception("A variável REDIS_CONNECTION_STRING não foi fornecida.");
+            var caminhoArquivoLogs = Path.Combine(caminhoAppData, "eAgenda", "erro.log");
 
-        services.AddStackExchangeRedisCache(opt =>
-        {
-            opt.Configuration = redisConnectionString;
-            opt.InstanceName = "eagenda";
-        });
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File(caminhoArquivoLogs, LogEventLevel.Error)
+                .WriteTo.NewRelicLogs(
+                    endpointUrl: "https://log-api.newrelic.com/log/v1",
+                    applicationName: "GestaoDeEstacionamento",
+                    licenseKey: licenseKey
+                )
+                .CreateLogger();
 
-        return services;
-    }
+            logging.ClearProviders();
 
-    private static void AddSerilogConfig(this IServiceCollection services, ILoggingBuilder logging, IConfiguration configuration)
-    {
-        var licenseKey = configuration["NEWRELIC_LICENSE_KEY"];
-
-        if (string.IsNullOrWhiteSpace(licenseKey))
-            throw new Exception("A variável NEWRELIC_LICENSE_KEY não foi fornecida.");
-
-        var caminhoAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-        var caminhoArquivoLogs = Path.Combine(caminhoAppData, "eAgenda", "erro.log");
-
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.Console()
-            .WriteTo.File(caminhoArquivoLogs, LogEventLevel.Error)
-            .WriteTo.NewRelicLogs(
-                endpointUrl: "https://log-api.newrelic.com/log/v1",
-                applicationName: "e-agenda-app",
-                licenseKey: licenseKey
-            )
-            .CreateLogger();
-
-        logging.ClearProviders();
-
-        services.AddSerilog();
+            services.AddSerilog();
+        }
     }
 }
