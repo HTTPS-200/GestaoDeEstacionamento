@@ -1,17 +1,21 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
-public class Fatura
+public class Fatura : EntidadeBase<Fatura>
 {
-    public int Id { get; set; }
-    public Ticket Ticket { get; set; } = new();
+    public Ticket TicketId { get; set; } = new();
     public DateTime DataEntrada { get; set; }
     public DateTime DataSaida { get; set; }
     public int NumeroDiarias { get; set; }
     public decimal ValorTotal { get; set; }
+
+    public override void AtualizarRegistro(Fatura registroEditado)
+    {
+        registroEditado.TicketId = TicketId;
+        registroEditado.DataEntrada = DataEntrada;
+        registroEditado.DataSaida = DataSaida;
+        registroEditado.NumeroDiarias = NumeroDiarias;
+        registroEditado.ValorTotal = ValorTotal;
+    }
 }
