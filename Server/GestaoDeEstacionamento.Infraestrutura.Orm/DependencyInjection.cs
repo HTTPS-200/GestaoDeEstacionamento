@@ -1,5 +1,7 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
         public static IServiceCollection AddCamadaInfraestruturaOrm(this IServiceCollection services, IConfiguration configuration)
         {
             //services.AddScoped
+            services.AddScoped<IRepositorioFatura, RepositorioFaturaEmOrm>();
             services.AddEntityFrameworkConfig(configuration);
 
             return services;

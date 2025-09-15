@@ -1,5 +1,6 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,13 +15,15 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
     IdentityDbContext<Usuario, Cargo, Guid>(options), IUnitOfWork
     {
         // add public DbSet para módulos adicionados
+        public DbSet<Fatura> Fatura { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (tenantProvider is not null)
-            { 
-                // add modelBuilder para módulos (query filter UsuarioId)
-            
+            {
+                modelBuilder.Entity<Fatura>()
+                .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
+
             }
 
             var assembly = typeof(AppDbContext).Assembly;
