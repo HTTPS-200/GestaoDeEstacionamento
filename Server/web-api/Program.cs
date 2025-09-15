@@ -1,7 +1,10 @@
+using GestaoDeEstacionamento.Core.Aplicacao;
+using GestaoDeEstacionamento.WebApi.AutoMapper;
 using GestaoDeEstacionamento.WebApi.Identify;
 using GestaoDeEstacionamento.WebApi.Orm;
 using GestaoDeEstacionamento.WebApi.Swagger;
 using System.Text.Json.Serialization;
+using GestaoDeEstacionamento.Infraestrutura.Orm;
 
 namespace eAgenda.WebApi;
 

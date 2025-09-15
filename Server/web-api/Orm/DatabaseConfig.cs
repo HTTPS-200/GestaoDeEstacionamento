@@ -1,4 +1,5 @@
 ﻿using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestaoDeEstacionamento.WebApi.Orm
 {
