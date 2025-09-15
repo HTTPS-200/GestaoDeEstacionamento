@@ -3,6 +3,7 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,6 +21,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
         public DbSet<Fatura> Fatura { get; set; }
         public DbSet<Saida> Saida { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Vaga> Vaga { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +29,9 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
             {
                 modelBuilder.Entity<Fatura>()
                 .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
+
+                modelBuilder.Entity<Vaga>()
+               .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Saida>()
                     .HasQueryFilter(x => x.TicketId.Equals(tenantProvider.UsuarioId));
