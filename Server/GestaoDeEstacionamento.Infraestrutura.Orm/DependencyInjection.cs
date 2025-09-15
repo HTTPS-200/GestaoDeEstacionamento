@@ -11,6 +11,8 @@ using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloSaidaLiberacao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloRelatorio;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm
 {
@@ -23,6 +25,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
             services.AddScoped<IRepositorioVaga, RepositorioVagaEmOrm>();
             services.AddScoped<IRepositorioSaida, RepositorioSaidaEmOrm>();
             services.AddScoped<IRepositorioTicket, RepositorioChekInEmOrm>();
+            services.AddScoped<IRepositorioRelatorioFinanceiro, RepositorioRelatorioFinanceiroEmOrm>();
             services.AddEntityFrameworkConfig(configuration);
 
             return services;

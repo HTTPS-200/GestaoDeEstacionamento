@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 {
@@ -20,6 +21,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
         // add public DbSet para módulos adicionados
         public DbSet<Fatura> Fatura { get; set; }
         public DbSet<Saida> Saida { get; set; }
+        public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Vaga> Vaga { get; set; }
 
@@ -37,6 +39,9 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
                     .HasQueryFilter(x => x.TicketId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Ticket>()
+                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
+
+                modelBuilder.Entity<RelatorioFinanceiro>()
                     .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
 
             }
