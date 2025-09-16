@@ -3,6 +3,7 @@
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 public class Veiculo : EntidadeBase<Veiculo>
 {
+    public Guid Ticket { get; set; }
     public int TicketId { get; set; }
     public string Placa { get; set; }
     public string Modelo { get; set; }

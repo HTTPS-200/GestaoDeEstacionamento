@@ -13,7 +13,7 @@ public class MapeadorSaidaLiberacaoEmOrm : IEntityTypeConfiguration<Saida>
         builder.Property(s => s.DataSaida)
             .IsRequired();
 
-        builder.HasOne(s => s.TicketId)
+        builder.HasOne(s => s.Ticket)
             .WithMany()
             .HasForeignKey(s => s.TicketId)
             .OnDelete(DeleteBehavior.Restrict);

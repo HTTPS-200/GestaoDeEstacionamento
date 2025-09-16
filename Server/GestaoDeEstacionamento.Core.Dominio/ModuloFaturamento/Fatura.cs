@@ -4,8 +4,11 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 public class Fatura : EntidadeBase<Fatura>
 {
-    public Ticket TicketId { get; set; } = new();
-    public Veiculo VeiculoId { get; set; }
+    public Guid TicketId { get; set; }
+    public Guid VeiculoId { get; set; }
+
+    public Ticket Ticket { get; set; }
+    public Veiculo Veiculo { get; set; }
     public DateTime DataEntrada { get; set; }
     public DateTime DataSaida { get; set; }
     public int NumeroDiarias { get; set; }
@@ -16,6 +19,7 @@ public class Fatura : EntidadeBase<Fatura>
     public override void AtualizarRegistro(Fatura registroEditado)
     {
         registroEditado.TicketId = TicketId;
+        registroEditado.VeiculoId = VeiculoId;
         registroEditado.DataEntrada = DataEntrada;
         registroEditado.DataSaida = DataSaida;
         registroEditado.NumeroDiarias = NumeroDiarias;

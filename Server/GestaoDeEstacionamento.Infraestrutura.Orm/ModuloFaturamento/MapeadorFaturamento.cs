@@ -37,12 +37,12 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento
             builder.Property(x => x.Pago)
                 .IsRequired();
 
-            builder.HasOne(x => x.TicketId)
+            builder.HasOne(x => x.Ticket)
                 .WithMany()
                 .HasForeignKey("TicketId")
                 .IsRequired();
 
-            builder.HasOne(x => x.VeiculoId)
+            builder.HasOne(x => x.Veiculo)
                 .WithMany()
                 .HasForeignKey("VeiculoId")
                 .IsRequired();
