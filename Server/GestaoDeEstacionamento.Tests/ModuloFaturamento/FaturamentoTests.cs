@@ -35,7 +35,7 @@ public sealed class FaturamentoTests
 
         var original = new Fatura
         {
-            TicketId = new Ticket {Id = id},
+            Ticket = new Ticket {Id = id},
             DataEntrada = new DateTime(2025, 9, 14),
             DataSaida = new DateTime(2025, 9, 15),
             NumeroDiarias = 1,
@@ -48,7 +48,7 @@ public sealed class FaturamentoTests
         original.AtualizarRegistro(editado);
 
         // Assert
-        Assert.AreEqual(original.TicketId.Id, editado.TicketId.Id);
+        Assert.AreEqual(original.Ticket.Id, editado.Ticket.Id);
         Assert.AreEqual(original.DataEntrada, editado.DataEntrada);
         Assert.AreEqual(original.DataSaida, editado.DataSaida);
         Assert.AreEqual(original.NumeroDiarias, editado.NumeroDiarias);

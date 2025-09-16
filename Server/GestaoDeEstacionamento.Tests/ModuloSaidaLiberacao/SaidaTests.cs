@@ -30,10 +30,10 @@ public sealed class SaidaTests
         var saida = new Saida();
 
         // Act
-        saida.TicketId = ticket;
+        saida.TicketId = ticketId;
 
         // Assert
-        Assert.AreEqual(ticketId, saida.TicketId.Id);
+        Assert.AreEqual(ticketId, saida.Ticket.Id);
     }
 
     [TestMethod]
@@ -44,7 +44,7 @@ public sealed class SaidaTests
         var original = new Saida
         {
             DataSaida = new DateTime(2025, 9, 16, 15, 0, 0),
-            TicketId = new Ticket { Id = ticketId }
+            Ticket = new Ticket { Id = ticketId }
         };
 
         var editado = new Saida();
@@ -54,6 +54,6 @@ public sealed class SaidaTests
 
         // Assert
         Assert.AreEqual(original.DataSaida, editado.DataSaida);
-        Assert.AreEqual(original.TicketId.Id, editado.TicketId.Id);
+        Assert.AreEqual(original.Ticket.Id, editado.Ticket.Id);
     }
 }
