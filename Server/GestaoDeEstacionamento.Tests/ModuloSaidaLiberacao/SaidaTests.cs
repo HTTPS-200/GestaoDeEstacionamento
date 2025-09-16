@@ -22,18 +22,17 @@ public sealed class SaidaTests
     }
 
     [TestMethod]
-    public void Deve_Associar_Ticket_Corretamente()
+    public void Deve_Associar_TicketId_Corretamente()
     {
         // Arrange
         var ticketId = Guid.NewGuid();
-        var ticket = new Ticket { Id = ticketId };
         var saida = new Saida();
 
         // Act
         saida.TicketId = ticketId;
 
         // Assert
-        Assert.AreEqual(ticketId, saida.Ticket.Id);
+        Assert.AreEqual(ticketId, saida.TicketId);
     }
 
     [TestMethod]
@@ -44,7 +43,7 @@ public sealed class SaidaTests
         var original = new Saida
         {
             DataSaida = new DateTime(2025, 9, 16, 15, 0, 0),
-            Ticket = new Ticket { Id = ticketId }
+            TicketId = ticketId
         };
 
         var editado = new Saida();
@@ -54,6 +53,6 @@ public sealed class SaidaTests
 
         // Assert
         Assert.AreEqual(original.DataSaida, editado.DataSaida);
-        Assert.AreEqual(original.Ticket.Id, editado.Ticket.Id);
+        Assert.AreEqual(original.TicketId, editado.TicketId);
     }
 }

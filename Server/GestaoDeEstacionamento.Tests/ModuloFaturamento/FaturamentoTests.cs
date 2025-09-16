@@ -31,11 +31,13 @@ public sealed class FaturamentoTests
     public void Deve_Atualizar_Registro_Corretamente()
     {
         // Arrange
-        var id = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+        var veiculoId = Guid.NewGuid();
 
         var original = new Fatura
         {
-            Ticket = new Ticket {Id = id},
+            TicketId = ticketId,
+            VeiculoId = veiculoId,
             DataEntrada = new DateTime(2025, 9, 14),
             DataSaida = new DateTime(2025, 9, 15),
             NumeroDiarias = 1,
@@ -48,7 +50,8 @@ public sealed class FaturamentoTests
         original.AtualizarRegistro(editado);
 
         // Assert
-        Assert.AreEqual(original.Ticket.Id, editado.Ticket.Id);
+        Assert.AreEqual(original.TicketId, editado.TicketId);
+        Assert.AreEqual(original.VeiculoId, editado.VeiculoId);
         Assert.AreEqual(original.DataEntrada, editado.DataEntrada);
         Assert.AreEqual(original.DataSaida, editado.DataSaida);
         Assert.AreEqual(original.NumeroDiarias, editado.NumeroDiarias);
