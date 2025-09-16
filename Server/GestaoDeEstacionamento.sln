@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestaoDeEstacionamento.Infr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestaoDeEstacionamento.Util.TokenGenerator", "GestaoDeEstacionamento.Util.TokenGenerator\GestaoDeEstacionamento.Util.TokenGenerator.csproj", "{E3D2AA8A-E429-4A7F-B6A4-931EC69F8733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestaoDeEstacionamento.Tests", "GestaoDeEstacionamento.Tests\GestaoDeEstacionamento.Tests.csproj", "{7B7D0E93-3329-476C-8B69-2FC39D975CC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestaoDeEstacionamento.TestsUnitarios", "GestaoDeEstacionamento.Tests\GestaoDeEstacionamento.TestsUnitarios.csproj", "{7B7D0E93-3329-476C-8B69-2FC39D975CC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
