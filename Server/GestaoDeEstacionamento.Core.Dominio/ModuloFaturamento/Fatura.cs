@@ -1,43 +1,36 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRecepcaoChekInVeiculo;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 public class Fatura : EntidadeBase<Fatura>
 {
     public Guid TicketId { get; set; }
-    public DateTime DataEntrada { get; set; }
-    public DateTime DataSaida { get; set; }
-    public int Diarias { get; set; }
-    public decimal ValorDiaria { get; set; }
-    public decimal ValorTotal => Diarias * ValorDiaria;
+    public decimal ValorTotal { get; set; }
+    public DateTime DataFaturamento { get; set; }
+    public bool Pago { get; set; }
 
-    public Fatura(){ }
-
-    public Fatura(Veiculo veiculo)
+    public Fatura(Guid ticketId, decimal valorTotal)
     {
-        if (veiculo.DataSaida == null)
-            throw new InvalidOperationException("Veículo ainda não saiu.");
-
-        TicketId = veiculo.TicketId;
-        DataEntrada = veiculo.DataEntrada;
-        DataSaida = veiculo.DataSaida.Value;
-        Diarias = CalcularDiarias(DataEntrada, DataSaida);
+        TicketId = ticketId;
+        ValorTotal = valorTotal;
+        DataFaturamento = DateTime.UtcNow;
+        Pago = false;
     }
 
-    private int CalcularDiarias(DateTime entrada, DateTime saida)
+    public override void AtualizarRegistro(Fatura registro)
     {
-        var dias = (saida.Date - entrada.Date).Days + 1;
-        return dias < 1 ? 1 : dias;
+        if (registro is Fatura atualizacao)
+        {
+            ValorTotal = atualizacao.ValorTotal != 0 ? atualizacao.ValorTotal : ValorTotal;
+            if (atualizacao.Pago && !Pago)
+                RegistrarPagamento();
+        }
     }
 
-    public override void AtualizarRegistro(Fatura entidadeAtualizada)
+    public void RegistrarPagamento()
     {
-        var fatura = entidadeAtualizada as Fatura;
-        if (fatura == null) return;
-
-        DataEntrada = fatura.DataEntrada;
-        DataSaida = fatura.DataSaida;
-        Diarias = fatura.Diarias;
-        ValorDiaria = fatura.ValorDiaria;
+        if (Pago)
+            throw new InvalidOperationException("Fatura já paga.");
+        Pago = true;
     }
 }

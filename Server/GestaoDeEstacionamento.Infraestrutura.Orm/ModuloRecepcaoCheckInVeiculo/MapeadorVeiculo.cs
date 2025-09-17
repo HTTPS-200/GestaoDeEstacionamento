@@ -1,4 +1,4 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.ModuloRecepcaoChekInVeiculo;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

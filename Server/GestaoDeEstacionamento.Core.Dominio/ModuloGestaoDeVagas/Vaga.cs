@@ -1,5 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRecepcaoChekInVeiculo;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
 public class Vaga : EntidadeBase<Vaga>
@@ -15,9 +15,9 @@ public class Vaga : EntidadeBase<Vaga>
         Zona = zona;
     }
 
-    public override void AtualizarRegistro(Vaga registroEditado)
+    public override void AtualizarRegistro(Vaga registro)
     {
-        var vaga = registroEditado as Vaga;
+        var vaga = registro as Vaga;
         if (vaga == null) return;
 
         Zona = vaga.Zona;

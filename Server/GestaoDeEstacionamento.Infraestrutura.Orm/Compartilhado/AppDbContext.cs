@@ -2,7 +2,7 @@
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRecepcaoChekInVeiculo;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
