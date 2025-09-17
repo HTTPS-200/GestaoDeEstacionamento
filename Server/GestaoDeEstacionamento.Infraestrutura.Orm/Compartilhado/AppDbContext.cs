@@ -19,6 +19,8 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
     IdentityDbContext<Usuario, Cargo, Guid>(options), IUnitOfWork
     {
         // add public DbSet para módulos adicionados
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<Fatura> Fatura { get; set; }
         public DbSet<Saida> Saida { get; set; }
         public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
@@ -47,6 +49,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 
                 modelBuilder.Entity<Veiculo>()
                     .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
+
 
             }
 
