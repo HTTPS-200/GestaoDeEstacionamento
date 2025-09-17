@@ -72,5 +72,20 @@ namespace GestaoDeEstacionamento.WebApi.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("refresh")]
+        public async Task<ActionResult<AccessToken>> Refresh([FromBody] string refreshToken)
+        {
+            var command = new RefreshTokenCommand(refreshToken);
+
+            var result = await mediator.Send(command);
+
+            if (result.IsFailed)
+            {
+                return Unauthorized(result.Errors.Select(e => e.Message));
+            }
+
+            return Ok(result.Value);
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using FluentResults;
-using GestaoDeEstacionamento.Core.Dominio.DTOs;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using MediatR;
 using System;
@@ -10,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Comands
 {
-    public record AutenticarUsuarioCommand(string Email, string Senha) : IRequest<Result<LoginResponseComRefreshToken>>;
+    public record RefreshTokenCommand(string Token) : IRequest<Result<AccessToken>>;
 }

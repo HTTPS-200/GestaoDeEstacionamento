@@ -1,10 +1,10 @@
 ﻿using FluentResults;
 using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
 using GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Comands;
+using GestaoDeEstacionamento.Core.Dominio.DTOs;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,10 +14,13 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
     public class RegistrarUsuarioCommandHandler(
         UserManager<Usuario> userManager,
         ITokenProvider tokenProvider,
-        IRefreshTokenProvider refreshTokenProvider 
-    ) : IRequestHandler<RegistrarUsuarioCommand, Result<AccessToken>>
+        IRefreshTokenProvider refreshTokenProvider
+    ) : IRequestHandler<RegistrarUsuarioCommand, Result<LoginResponseComRefreshToken>>
     {
-        public async Task<Result<AccessToken>> Handle(RegistrarUsuarioCommand command, CancellationToken cancellationToken)
+        public async Task<Result<LoginResponseComRefreshToken>> Handle(
+            RegistrarUsuarioCommand command,
+            CancellationToken cancellationToken
+        )
         {
             if (!command.Senha.Equals(command.ConfirmarSenha))
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("A confirmação de senha falhou."));
@@ -51,13 +54,17 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
             }
 
-            var tokenAcesso = tokenProvider.GerarAccessToken(usuario);
+            var accessToken = tokenProvider.GerarAccessToken(usuario);
 
             var refreshToken = refreshTokenProvider.GerarRefreshToken(usuario);
-
             await refreshTokenProvider.SalvarRefreshTokenAsync(refreshToken);
 
-            return Result.Ok(tokenAcesso);
+            var response = new LoginResponseComRefreshToken(
+                AccessToken: accessToken,
+                RefreshToken: refreshToken.Token
+            );
+
+            return Result.Ok(response);
         }
     }
 }

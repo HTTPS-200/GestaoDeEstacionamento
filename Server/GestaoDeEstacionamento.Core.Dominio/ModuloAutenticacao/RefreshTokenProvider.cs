@@ -1,51 +1,29 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 
-namespace GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao
+namespace GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+public class RefreshTokenProvider
 {
-    public class RefreshTokenProvider : IRefreshTokenProvider
+    private readonly IRefreshTokenProvider repositorio;
+
+    public RefreshTokenProvider(IRefreshTokenProvider repositorio)
     {
-        private readonly IConfiguration config;
+        this.repositorio = repositorio;
+    }
 
-        public RefreshTokenProvider(IConfiguration config)
-        {
-            this.config = config;
-        }
+    public async Task<RefreshToken> CriarERegistrarRefreshTokenAsync(Usuario usuario)
+    {
+        var token = repositorio.GerarRefreshToken(usuario);
+        await repositorio.SalvarRefreshTokenAsync(token);
+        return token;
+    }
 
-        public RefreshToken GerarRefreshToken(Usuario usuario)
-        {
-            var randomNumber = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
+    public Task<RefreshToken?> ValidarRefreshTokenAsync(string token)
+    {
+        return repositorio.ObterRefreshTokenAsync(token);
+    }
 
-            return new RefreshToken
-            {
-                UsuarioId = usuario.Id,
-                Token = Convert.ToBase64String(randomNumber),
-                Expiracao = DateTime.UtcNow.AddDays(7), 
-                Usado = false,
-                Revogado = false
-            };
-        }
-
-        public Task SalvarRefreshTokenAsync(RefreshToken token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RefreshToken?> ObterRefreshTokenAsync(string token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task InvalidarRefreshTokenAsync(string token)
-        {
-            throw new NotImplementedException();
-        }
+    public Task InvalidarRefreshTokenAsync(string token)
+    {
+        return repositorio.InvalidarRefreshTokenAsync(token);
     }
 }

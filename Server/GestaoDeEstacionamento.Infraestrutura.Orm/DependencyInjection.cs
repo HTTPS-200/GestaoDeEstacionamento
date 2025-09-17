@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloRelatorio;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm
 {
@@ -21,6 +22,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
         public static IServiceCollection AddCamadaInfraestruturaOrm(this IServiceCollection services, IConfiguration configuration)
         {
             //services.AddScoped
+            services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
             services.AddScoped<IRepositorioFatura, RepositorioFaturaEmOrm>();
             services.AddScoped<IRepositorioVaga, RepositorioVagaEmOrm>();
             services.AddScoped<IRepositorioSaida, RepositorioSaidaEmOrm>();

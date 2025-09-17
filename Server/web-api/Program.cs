@@ -5,6 +5,7 @@ using GestaoDeEstacionamento.WebApi.Orm;
 using GestaoDeEstacionamento.WebApi.Swagger;
 using System.Text.Json.Serialization;
 using GestaoDeEstacionamento.Infraestrutura.Orm;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 
 namespace eAgenda.WebApi;
 
@@ -22,6 +23,7 @@ public class Program
         builder.Services.AddAutoMapperProfiles(builder.Configuration);
 
         builder.Services.AddIdentityProviderConfig(builder.Configuration);
+
 
         builder.Services
             .AddControllers()

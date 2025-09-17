@@ -5,7 +5,7 @@ namespace GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao
     public class Usuario : IdentityUser<Guid>
     {
         public string FullName { get; set; }
-
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
         public Usuario()
         {
             Id = Guid.NewGuid();

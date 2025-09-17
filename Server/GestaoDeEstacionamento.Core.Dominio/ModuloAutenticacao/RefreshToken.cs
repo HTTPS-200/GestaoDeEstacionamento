@@ -8,7 +8,7 @@ namespace GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao
 {
     public class RefreshToken 
     {
-        public Guid id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Token { get; set; } = string.Empty;
         public Guid UsuarioId { get; set; }
         public DateTime Expiracao { get; set; }

@@ -1,25 +1,26 @@
 ﻿using FluentResults;
 using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
 using GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Comands;
+using GestaoDeEstacionamento.Core.Dominio.DTOs;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
 {
     public class AutenticarUsuarioCommandHandler(
-           SignInManager<Usuario> signInManager,
-           UserManager<Usuario> userManager,
-           ITokenProvider tokenProvider,
-           IRefreshTokenProvider refreshTokenProvider 
-       ) : IRequestHandler<AutenticarUsuarioCommand, Result<AccessToken>>
+        SignInManager<Usuario> signInManager,
+        UserManager<Usuario> userManager,
+        ITokenProvider tokenProvider,
+        IRefreshTokenProvider refreshTokenProvider
+    ) : IRequestHandler<AutenticarUsuarioCommand, Result<LoginResponseComRefreshToken>>
     {
-        public async Task<Result<AccessToken>> Handle(AutenticarUsuarioCommand request, CancellationToken cancellationToken)
+        public async Task<Result<LoginResponseComRefreshToken>> Handle(
+            AutenticarUsuarioCommand request,
+            CancellationToken cancellationToken
+        )
         {
             var usuarioEncontrado = await userManager.FindByEmailAsync(request.Email);
 
@@ -47,13 +48,17 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
             }
 
-            var tokenAcesso = tokenProvider.GerarAccessToken(usuarioEncontrado);
+            var accessToken = tokenProvider.GerarAccessToken(usuarioEncontrado);
 
             var refreshToken = refreshTokenProvider.GerarRefreshToken(usuarioEncontrado);
-
             await refreshTokenProvider.SalvarRefreshTokenAsync(refreshToken);
 
-            return Result.Ok(tokenAcesso);
+            var response = new LoginResponseComRefreshToken(
+                AccessToken: accessToken,
+                RefreshToken: refreshToken.Token
+            );
+
+            return Result.Ok(response);
         }
     }
 }
