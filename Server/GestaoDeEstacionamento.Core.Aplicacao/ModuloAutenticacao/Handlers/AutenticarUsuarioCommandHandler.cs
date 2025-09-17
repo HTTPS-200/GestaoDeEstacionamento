@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
 {
     public class AutenticarUsuarioCommandHandler(
-      SignInManager<Usuario> signInManager,
-      UserManager<Usuario> userManager,
-      ITokenProvider tokenProvider
-  ) : IRequestHandler<AutenticarUsuarioCommand, Result<AccessToken>>
+           SignInManager<Usuario> signInManager,
+           UserManager<Usuario> userManager,
+           ITokenProvider tokenProvider,
+           IRefreshTokenProvider refreshTokenProvider 
+       ) : IRequestHandler<AutenticarUsuarioCommand, Result<AccessToken>>
     {
         public async Task<Result<AccessToken>> Handle(AutenticarUsuarioCommand request, CancellationToken cancellationToken)
         {
@@ -32,28 +33,27 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
                 lockoutOnFailure: false
             );
 
-            if (resultadoLogin.Succeeded)
+            if (!resultadoLogin.Succeeded)
             {
-                var tokenAcesso = tokenProvider.GerarAccessToken(usuarioEncontrado);
+                if (resultadoLogin.IsLockedOut)
+                    return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Sua conta foi bloqueada temporariamente devido a muitas tentativas inválidas."));
 
-                return Result.Ok(tokenAcesso);
+                if (resultadoLogin.IsNotAllowed)
+                    return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Não é permitido efetuar login. Verifique se sua conta está confirmada."));
+
+                if (resultadoLogin.RequiresTwoFactor)
+                    return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("É necessário confirmar o login com autenticação de dois fatores."));
+
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
             }
 
-            if (resultadoLogin.IsLockedOut)
-                return Result.Fail(ResultadosErro
-                    .RequisicaoInvalidaErro("Sua conta foi bloqueada temporariamente devido a muitas tentativas inválidas."));
+            var tokenAcesso = tokenProvider.GerarAccessToken(usuarioEncontrado);
 
-            if (resultadoLogin.IsNotAllowed)
-                return Result.Fail(ResultadosErro
-                    .RequisicaoInvalidaErro("Não é permitido efetuar login. Verifique se sua conta está confirmada."));
+            var refreshToken = refreshTokenProvider.GerarRefreshToken(usuarioEncontrado);
 
-            if (resultadoLogin.RequiresTwoFactor)
-                return Result.Fail(ResultadosErro
-                    .RequisicaoInvalidaErro("É necessário confirmar o login com autenticação de dois fatores."));
+            await refreshTokenProvider.SalvarRefreshTokenAsync(refreshToken);
 
-            return Result.Fail(ResultadosErro
-                .RequisicaoInvalidaErro("Login ou senha incorretos."));
+            return Result.Ok(tokenAcesso);
         }
     }
-
 }

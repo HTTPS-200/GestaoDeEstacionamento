@@ -5,17 +5,17 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
 {
     public class RegistrarUsuarioCommandHandler(
-     UserManager<Usuario> userManager,
-     ITokenProvider tokenProvider
- ) : IRequestHandler<RegistrarUsuarioCommand, Result<AccessToken>>
+        UserManager<Usuario> userManager,
+        ITokenProvider tokenProvider,
+        IRefreshTokenProvider refreshTokenProvider 
+    ) : IRequestHandler<RegistrarUsuarioCommand, Result<AccessToken>>
     {
         public async Task<Result<AccessToken>> Handle(RegistrarUsuarioCommand command, CancellationToken cancellationToken)
         {
@@ -28,7 +28,6 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
                 UserName = command.Email,
                 Email = command.Email
             };
-
 
             var usuarioResult = await userManager.CreateAsync(usuario, command.Senha);
 
@@ -54,10 +53,11 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloAutenticacao.Handlers
 
             var tokenAcesso = tokenProvider.GerarAccessToken(usuario);
 
-            if (tokenAcesso is null)
-                return Result.Fail(ResultadosErro.ExcecaoInternaErro(new Exception("Falha ao gerar token de acesso.")));
+            var refreshToken = refreshTokenProvider.GerarRefreshToken(usuario);
 
-            return Result.Ok(tokenAcesso!);
+            await refreshTokenProvider.SalvarRefreshTokenAsync(refreshToken);
+
+            return Result.Ok(tokenAcesso);
         }
     }
 }
