@@ -61,7 +61,7 @@ namespace GestaoDeEstacionamento.Core.Aplicacao
 
             var caminhoAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            var caminhoArquivoLogs = Path.Combine(caminhoAppData, "eAgenda", "erro.log");
+            var caminhoArquivoLogs = Path.Combine(caminhoAppData, "GestaoDeEstacionamento", "erro.log");
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()

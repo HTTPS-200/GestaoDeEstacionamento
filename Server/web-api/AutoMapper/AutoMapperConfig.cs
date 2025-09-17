@@ -14,6 +14,7 @@ namespace GestaoDeEstacionamento.WebApi.AutoMapper
                     throw new Exception("A variável AUTOMAPPER_LICENSE_KEY não foi fornecida.");
 
                 config.LicenseKey = licenseKey;
+                config.AddMaps(typeof(Program).Assembly);
 
             }, typeof(Program).Assembly);
 
