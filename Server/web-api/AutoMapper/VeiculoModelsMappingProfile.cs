@@ -19,7 +19,8 @@ public class VeiculoModelsMappingProfile : Profile
      .ForMember(dest => dest.Ticket, opt => opt.Ignore())
      .ForMember(dest => dest.DataEntrada, opt => opt.Ignore());
 
-        CreateMap<SelecionarVeiculosRequest, SelecionarVeiculosQuery>();
+        CreateMap<SelecionarVeiculosRequest, SelecionarVeiculosQuery>()
+            .ConstructUsing(src => new SelecionarVeiculosQuery(src.Quantidade));
 
         CreateMap<CadastrarVeiculoResult, CadastrarVeiculoResponse>()
             .ConvertUsing(src => new CadastrarVeiculoResponse(

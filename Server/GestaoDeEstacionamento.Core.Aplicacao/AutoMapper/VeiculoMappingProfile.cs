@@ -60,9 +60,15 @@ public class VeiculoMappingProfile : Profile
 
         CreateMap<IEnumerable<Veiculo>, SelecionarVeiculosResult>()
             .ConvertUsing((src, dest, ctx) =>
-                new SelecionarVeiculosResult(
-                    src.Select(v => ctx.Mapper.Map<SelecionarVeiculosDto>(v)).ToImmutableList()
-                )
-            );
+            {
+                var veiculos = src
+                    .Select(v => ctx.Mapper.Map<SelecionarVeiculosDto>(v))
+                    .ToImmutableList();
+
+                return new SelecionarVeiculosResult(
+                    veiculos.Count,
+                    veiculos
+                );
+            });
     }
 }

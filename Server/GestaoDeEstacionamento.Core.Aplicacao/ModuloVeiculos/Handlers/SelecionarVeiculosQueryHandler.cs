@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
 using System.Text.Json;
+using System.Collections.Immutable;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Handlers;
 
@@ -45,7 +46,14 @@ public class SelecionarVeiculosQueryHandler : IRequestHandler<SelecionarVeiculos
                 await _repositorio.SelecionarRegistrosAsync(query.Quantidade.Value) :
                 await _repositorio.SelecionarRegistrosAsync();
 
-            var result = _mapper.Map<SelecionarVeiculosResult>(registros);
+            var veiculosDto = registros
+                .Select(v => _mapper.Map<SelecionarVeiculosDto>(v))
+                .ToImmutableList();
+
+            var result = new SelecionarVeiculosResult(
+     veiculosDto.Count,
+     veiculosDto
+);
 
             var jsonPayload = JsonSerializer.Serialize(result);
             await _cache.SetStringAsync(cacheKey, jsonPayload, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) }, cancellationToken);
@@ -55,7 +63,7 @@ public class SelecionarVeiculosQueryHandler : IRequestHandler<SelecionarVeiculos
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao selecionar veículos {@Query}", query);
-            return Result.Fail("Erro interno ao selecionar veículos.");
+            return Result.Fail($"Erro interno ao selecionar veículos: {ex.Message}");
         }
     }
 }

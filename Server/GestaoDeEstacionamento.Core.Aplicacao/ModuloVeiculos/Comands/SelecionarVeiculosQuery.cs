@@ -6,7 +6,10 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
 
 public record SelecionarVeiculosQuery(int? Quantidade) : IRequest<Result<SelecionarVeiculosResult>>;
 
-public record SelecionarVeiculosResult(IReadOnlyList<SelecionarVeiculosDto> Veiculos);
+public record SelecionarVeiculosResult(
+    int Quantidade,
+    IReadOnlyList<SelecionarVeiculosDto> Veiculos
+);
 
 public record SelecionarVeiculosDto(
     Guid TicketId,

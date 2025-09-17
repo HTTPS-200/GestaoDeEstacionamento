@@ -83,9 +83,8 @@ public class VeiculoController(IMediator mediator, IMapper mapper) : ControllerB
 
         return NoContent();
     }
-
     [HttpGet]
-    public async Task<ActionResult<SelecionarVeiculosResponse>> SelecionarTodos([FromQuery] SelecionarVeiculosRequest? request, CancellationToken cancellationToken)
+    public async Task<ActionResult<SelecionarVeiculosResponse>> SelecionarTodos([FromQuery] SelecionarVeiculosRequest request, CancellationToken cancellationToken)
     {
         var query = mapper.Map<SelecionarVeiculosQuery>(request);
 
