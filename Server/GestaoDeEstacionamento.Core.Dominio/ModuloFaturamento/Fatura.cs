@@ -1,28 +1,41 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+using GestaoDeEstacionamento.Core.Dominio.ModuloRecepcaoChekInVeiculo;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 public class Fatura : EntidadeBase<Fatura>
 {
     public Guid TicketId { get; set; }
-    public Guid VeiculoId { get; set; }
-
-    public Ticket Ticket { get; set; }
-    public Veiculo Veiculo { get; set; }
     public DateTime DataEntrada { get; set; }
     public DateTime DataSaida { get; set; }
-    public int NumeroDiarias { get; set; }
+    public int Diarias { get; set; }
     public decimal ValorDiaria { get; set; }
-    public decimal ValorTotal { get; set; }
-    public bool Pago { get; set; }
+    public decimal ValorTotal => Diarias * ValorDiaria;
 
-    public override void AtualizarRegistro(Fatura registroEditado)
+    public Fatura(Veiculo veiculo)
     {
-        registroEditado.TicketId = TicketId;
-        registroEditado.VeiculoId = VeiculoId;
-        registroEditado.DataEntrada = DataEntrada;
-        registroEditado.DataSaida = DataSaida;
-        registroEditado.NumeroDiarias = NumeroDiarias;
-        registroEditado.ValorTotal = ValorTotal;
+        if (veiculo.DataSaida == null)
+            throw new InvalidOperationException("Veículo ainda não saiu.");
+
+        TicketId = veiculo.TicketId;
+        DataEntrada = veiculo.DataEntrada;
+        DataSaida = veiculo.DataSaida.Value;
+        Diarias = CalcularDiarias(DataEntrada, DataSaida);
+    }
+
+    private int CalcularDiarias(DateTime entrada, DateTime saida)
+    {
+        var dias = (saida.Date - entrada.Date).Days + 1;
+        return dias < 1 ? 1 : dias;
+    }
+
+    public override void AtualizarRegistro(Fatura entidadeAtualizada)
+    {
+        var fatura = entidadeAtualizada as Fatura;
+        if (fatura == null) return;
+
+        DataEntrada = fatura.DataEntrada;
+        DataSaida = fatura.DataSaida;
+        Diarias = fatura.Diarias;
+        ValorDiaria = fatura.ValorDiaria;
     }
 }

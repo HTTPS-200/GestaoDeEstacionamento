@@ -12,4 +12,8 @@
     <ProjectReference Include="..\GestaoDeEstacionamento.Core.Dominio\GestaoDeEstacionamento.Core.Dominio.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

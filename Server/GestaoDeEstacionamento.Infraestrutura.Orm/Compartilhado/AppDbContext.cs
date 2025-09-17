@@ -1,17 +1,7 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
-using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
-using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
-using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 {
@@ -19,34 +9,15 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
     IdentityDbContext<Usuario, Cargo, Guid>(options), IUnitOfWork
     {
         // add public DbSet para módulos adicionados
-        public DbSet<Fatura> Fatura { get; set; }
-        public DbSet<Saida> Saida { get; set; }
-        public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<Vaga> Vaga { get; set; }
-        public DbSet<Veiculo> Veiculos { get; set; }
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (tenantProvider is not null)
             {
-                modelBuilder.Entity<Fatura>()
-                .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
+                //modelBuilder.Entity<Fatura>()
+                //.HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
-                modelBuilder.Entity<Vaga>()
-               .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
-
-                modelBuilder.Entity<Saida>()
-                    .HasQueryFilter(x => x.TicketId.Equals(tenantProvider.UsuarioId));
-
-                modelBuilder.Entity<Ticket>()
-                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
-
-                modelBuilder.Entity<RelatorioFinanceiro>()
-                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
-
-                modelBuilder.Entity<Veiculo>()
-                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
 
             }
 

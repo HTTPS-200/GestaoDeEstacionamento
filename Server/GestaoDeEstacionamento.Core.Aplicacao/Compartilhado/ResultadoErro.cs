@@ -1,10 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentResults;
+﻿using FluentResults;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.Compartilhado
 {
