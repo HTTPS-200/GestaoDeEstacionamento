@@ -11,6 +11,8 @@ public class Fatura : EntidadeBase<Fatura>
     public decimal ValorDiaria { get; set; }
     public decimal ValorTotal => Diarias * ValorDiaria;
 
+    public Fatura(){ }
+
     public Fatura(Veiculo veiculo)
     {
         if (veiculo.DataSaida == null)

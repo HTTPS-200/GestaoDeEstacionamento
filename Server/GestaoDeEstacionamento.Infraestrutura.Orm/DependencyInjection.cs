@@ -16,8 +16,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
     {
         public static IServiceCollection AddCamadaInfraestruturaOrm(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddScoped
-            //services.AddScoped<IRepositorioX, RepositorioX>();
             services.AddScoped<IRepositorioFaturamento, RepositorioFaturamentoEmOrm>();
             services.AddScoped<IRepositorioVaga, RepositorioVagaEmOrm>();
             services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
