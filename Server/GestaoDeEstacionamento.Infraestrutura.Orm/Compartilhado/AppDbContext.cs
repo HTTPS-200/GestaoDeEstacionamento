@@ -12,6 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
+using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 {

@@ -1,26 +1,43 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using System.Diagnostics.CodeAnalysis;
 
-namespace GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+namespace GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
+
 public class Veiculo : EntidadeBase<Veiculo>
 {
-    public Guid Ticket { get; set; }
-    public int TicketId { get; set; }
     public string Placa { get; set; }
     public string Modelo { get; set; }
     public string Cor { get; set; }
-    public string CpfHospede { get; set; }
+    public string CPFHospede { get; set; }
     public string? Observacoes { get; set; }
     public DateTime DataEntrada { get; set; }
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public DateTime? DataSaida { get; set; }
+
+    [ExcludeFromCodeCoverage]
+    public Veiculo() { }
+
+    public Veiculo(string placa, string modelo, string cor, string cpfHospede, string? observacoes = null)
+    {
+        Id = Guid.NewGuid();
+        Placa = placa;
+        Modelo = modelo;
+        Cor = cor;
+        CPFHospede = cpfHospede;
+        Observacoes = observacoes;
+        DataEntrada = DateTime.Now;
+    }
 
     public override void AtualizarRegistro(Veiculo registroEditado)
     {
-        registroEditado.TicketId = TicketId;
-        registroEditado.Placa = Placa;
-        registroEditado.Modelo = Modelo;
-        registroEditado.Cor = Cor;
-        registroEditado.CpfHospede = CpfHospede;
-        registroEditado.Observacoes = Observacoes;
-        registroEditado.DataEntrada = DataEntrada;
+        Placa = registroEditado.Placa;
+        Modelo = registroEditado.Modelo;
+        Cor = registroEditado.Cor;
+        CPFHospede = registroEditado.CPFHospede;
+        Observacoes = registroEditado.Observacoes;
+    }
+
+    public void RegistrarSaida()
+    {
+        DataSaida = DateTime.Now;
     }
 }

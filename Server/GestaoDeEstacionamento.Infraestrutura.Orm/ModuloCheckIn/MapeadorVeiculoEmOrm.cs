@@ -1,46 +1,51 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloCheckIn;
+namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVeiculo;
+
 public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
 {
     public void Configure(EntityTypeBuilder<Veiculo> builder)
     {
-        builder.ToTable("Veiculos");
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever()
+            .IsRequired();
 
-        builder.HasKey(v => v.Id);
-
-        builder.Property(v => v.Placa)
+        builder.Property(x => x.Placa)
             .IsRequired()
             .HasMaxLength(10);
 
-        builder.Property(v => v.Modelo)
+        builder.Property(x => x.Modelo)
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(v => v.Cor)
+        builder.Property(x => x.Cor)
             .IsRequired()
-            .HasMaxLength(30);
+            .HasMaxLength(20);
 
-        builder.Property(v => v.CpfHospede)
+        builder.Property(x => x.CPFHospede)
             .IsRequired()
             .HasMaxLength(14);
 
-        builder.Property(v => v.Observacoes)
+        builder.Property(x => x.Observacoes)
+            .IsRequired(false)
             .HasMaxLength(500);
 
-        builder.HasMany(v => v.Tickets)
+        builder.Property(x => x.DataEntrada)
+            .IsRequired();
+
+        builder.Property(x => x.DataSaida)
+            .IsRequired(false);
+
+        builder.HasMany(x => x.Tickets)
             .WithOne(t => t.Veiculo)
             .HasForeignKey(t => t.VeiculoId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(v => v.Placa)
+        builder.HasIndex(x => x.Id)
             .IsUnique();
+
+        builder.HasIndex(x => x.Placa);
     }
 }

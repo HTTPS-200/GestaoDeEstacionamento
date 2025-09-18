@@ -1,18 +1,39 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+﻿
+using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
+using System.Diagnostics.CodeAnalysis;
 
-namespace GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+namespace GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
+
 public class Ticket : EntidadeBase<Ticket>
 {
+    public string NumeroTicket { get; set; }
     public Guid VeiculoId { get; set; }
-    public int Numero { get; set; }
-    public bool Status { get; set; }
-    public DateTime DataEntrada { get; set; }
-    public Veiculo Veiculo { get; set; } = new(); 
+    public Veiculo Veiculo { get; set; }
+    public DateTime DataCriacao { get; set; }
+    public bool Ativo { get; set; }
+
+    [ExcludeFromCodeCoverage]
+    public Ticket() { }
+
+    public Ticket(string numeroTicket, Guid veiculoId)
+    {
+        Id = Guid.NewGuid();
+        NumeroTicket = numeroTicket;
+        VeiculoId = veiculoId;
+        DataCriacao = DateTime.Now;
+        Ativo = true;
+    }
 
     public override void AtualizarRegistro(Ticket registroEditado)
     {
-        registroEditado.DataEntrada = DateTime.Now;
-        registroEditado.Veiculo = Veiculo;
+        NumeroTicket = registroEditado.NumeroTicket;
+        VeiculoId = registroEditado.VeiculoId;
+        Ativo = registroEditado.Ativo;
+    }
+
+    public void Encerrar()
+    {
+        Ativo = false;
     }
 }
-
