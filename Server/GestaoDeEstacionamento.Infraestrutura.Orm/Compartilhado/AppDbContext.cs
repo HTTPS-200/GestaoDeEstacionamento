@@ -15,6 +15,7 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 {
@@ -94,6 +95,11 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
             }
 
             await Task.CompletedTask;
+        }
+
+        public DatabaseFacade GetDatabase()
+        {
+            throw new NotImplementedException();
         }
     }
 

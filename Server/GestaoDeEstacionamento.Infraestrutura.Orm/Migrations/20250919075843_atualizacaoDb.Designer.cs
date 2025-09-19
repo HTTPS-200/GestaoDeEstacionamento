@@ -3,6 +3,7 @@ using System;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250919075843_atualizacaoDb")]
+    partial class atualizacaoDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -570,6 +573,33 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                         .IsRequired();
 
                     b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.Ticket", b =>
+                {
+                    b.OwnsOne("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.TicketSequencialInfo", "SequencialInfo", b1 =>
+                        {
+                            b1.Property<Guid>("TicketId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<DateTime>("DataAtualizacao")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("DataAtualizacaoSequencial");
+
+                            b1.Property<int>("UltimoNumero")
+                                .HasColumnType("integer")
+                                .HasColumnName("UltimoNumeroSequencial");
+
+                            b1.HasKey("TicketId");
+
+                            b1.ToTable("TBTicket");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TicketId");
+                        });
+
+                    b.Navigation("SequencialInfo")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloVaga.Vaga", b =>

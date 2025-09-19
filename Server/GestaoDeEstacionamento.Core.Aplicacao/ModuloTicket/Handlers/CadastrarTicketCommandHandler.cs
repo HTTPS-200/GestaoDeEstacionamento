@@ -28,7 +28,7 @@ public class CadastrarTicketCommandHandler(
         CadastrarTicketCommand command,
         CancellationToken cancellationToken)
     {
-        // Validação do comando
+        // 1. Validação do comando
         var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
         if (!resultadoValidacao.IsValid)
         {
@@ -38,51 +38,40 @@ public class CadastrarTicketCommandHandler(
 
         try
         {
-            // 1. Busca o veículo pela placa
-            var veiculos = await repositorioVeiculo.ObterPorPlaca(command.PlacaVeiculo);
-            var veiculo = veiculos.FirstOrDefault();
+            // 2. Busca veículo pela placa
+            var veiculo = (await repositorioVeiculo.ObterPorPlaca(command.PlacaVeiculo)).FirstOrDefault();
             if (veiculo == null)
-            {
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(
                     $"Veículo com placa {command.PlacaVeiculo} não encontrado"));
-            }
 
-            // 2. Verifica se já existe ticket ativo para este veículo
-            var ticketsDoVeiculo = await repositorioTicket.ObterPorVeiculoId(veiculo.Id);
-            if (ticketsDoVeiculo.Any())
-            {
+            // 3. Verifica tickets ativos
+            var ticketsAtivos = (await repositorioTicket.ObterPorVeiculoId(veiculo.Id)).Where(t => t.Ativo).ToList();
+            if (ticketsAtivos.Any())
                 return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
-                    $"Já existe um ticket para o veículo com placa {command.PlacaVeiculo}"));
-            }
+                    $"Já existe um ticket ativo para o veículo com placa {command.PlacaVeiculo}"));
 
-            // 3. Gera número sequencial único
-            var ultimoNumero = await repositorioTicket.ObterUltimoNumeroSequencial();
-            var proximoNumero = ultimoNumero + 1;
+            // 4. Calcula próximo número sequencial
+            var maiorSequencial = await repositorioTicket.ObterMaiorNumeroSequencial();
+            var proximoNumero = maiorSequencial + 1;
             var numeroTicket = proximoNumero.ToString("D6");
 
-            // 4. Cria e persiste o ticket
+            // 5. Cria ticket
             var ticket = new Ticket(numeroTicket, veiculo.Id, proximoNumero);
             ticket.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
 
             await repositorioTicket.CadastrarAsync(ticket);
             await unitOfWork.CommitAsync();
 
-            // 5. Invalida cache
-            await InvalidarCaches(tenantProvider.UsuarioId.GetValueOrDefault());
+            // 6. Invalida cache
+            await InvalidarCaches(ticket.UsuarioId);
 
-            // 6. Retorna resultado
-            var result = new CadastrarTicketResult(
-                ticket.Id,
-                numeroTicket,
-                veiculo.Placa
-            );
-
-            return Result.Ok(result);
+            // 7. Retorna resultado
+            return Result.Ok(new CadastrarTicketResult(ticket.Id, numeroTicket, veiculo.Placa));
         }
         catch (Exception ex)
         {
             await unitOfWork.RollbackAsync();
-            logger.LogError(ex, "Ocorreu um erro durante o cadastro do ticket {@Registro}.", command);
+            logger.LogError(ex, "Erro ao cadastrar ticket {@Registro}", command);
             return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }
     }
@@ -96,8 +85,6 @@ public class CadastrarTicketCommandHandler(
         };
 
         foreach (var cacheKey in cacheKeys)
-        {
             await cache.RemoveAsync(cacheKey);
-        }
     }
 }

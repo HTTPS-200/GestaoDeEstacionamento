@@ -6,12 +6,13 @@ using GestaoDeEstacionamento.WebApi.Swagger;
 using System.Text.Json.Serialization;
 using GestaoDeEstacionamento.Infraestrutura.Orm;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
 
 namespace eAgenda.WebApi;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,12 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.ApplyMigrations();
+            using var scope = app.Services.CreateScope();
+            var contexto = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            contexto.Database.EnsureDeleted();
+
+            contexto.Database.EnsureCreated();
 
             app.UseSwagger();
             app.UseSwaggerUI();

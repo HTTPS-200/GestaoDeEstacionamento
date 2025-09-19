@@ -31,18 +31,6 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
         builder.Property(x => x.UsuarioId)
             .IsRequired();
 
-        builder.OwnsOne(x => x.SequencialInfo, sequencial =>
-        {
-            sequencial.Property(s => s.UltimoNumero)
-                .IsRequired()
-                .HasColumnName("UltimoNumeroSequencial");
-
-            sequencial.Property(s => s.DataAtualizacao)
-                .IsRequired()
-                .HasColumnName("DataAtualizacaoSequencial")
-                .HasColumnType("timestamp with time zone");
-        });
-
         builder.HasIndex(x => x.Id)
             .IsUnique();
 
@@ -50,5 +38,7 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
             .IsUnique();
 
         builder.HasIndex(x => x.VeiculoId);
+
+
     }
 }

@@ -50,4 +50,10 @@ public class RepositorioTicketEmOrm(AppDbContext contexto)
     {
         await Task.CompletedTask;
     }
+
+    public async Task<int> ObterMaiorNumeroSequencial()
+    {
+ 
+        return await registros.MaxAsync(t => (int?)t.Sequencial) ?? 0;
+    }
 }
