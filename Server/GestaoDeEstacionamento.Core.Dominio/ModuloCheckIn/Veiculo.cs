@@ -12,6 +12,7 @@ public class Veiculo : EntidadeBase<Veiculo>
     public string? Observacoes { get; set; }
     public DateTime DataEntrada { get; set; }
     public DateTime? DataSaida { get; set; }
+    public Guid UsuarioId { get; set; }
 
     [ExcludeFromCodeCoverage]
     public Veiculo() { }
@@ -24,7 +25,7 @@ public class Veiculo : EntidadeBase<Veiculo>
         Cor = cor;
         CPFHospede = cpfHospede;
         Observacoes = observacoes;
-        DataEntrada = DateTime.Now;
+        DataEntrada = DateTime.UtcNow;
     }
 
     public override void AtualizarRegistro(Veiculo registroEditado)
@@ -38,6 +39,6 @@ public class Veiculo : EntidadeBase<Veiculo>
 
     public void RegistrarSaida()
     {
-        DataSaida = DateTime.Now;
+        DataSaida = DateTime.UtcNow; 
     }
 }

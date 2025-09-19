@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.FluentValidation.ModuloCheckIn;
 
@@ -8,19 +8,23 @@ public class CadastrarVeiculoCommandValidator : AbstractValidator<CadastrarVeicu
     public CadastrarVeiculoCommandValidator()
     {
         RuleFor(x => x.Placa)
-            .NotEmpty().WithMessage("A placa é obrigatória.")
-            .MaximumLength(10);
+            .NotEmpty().WithMessage("Placa é obrigatória")
+            .MaximumLength(10).WithMessage("Placa deve ter no máximo 10 caracteres");
 
         RuleFor(x => x.Modelo)
-            .NotEmpty().WithMessage("O modelo é obrigatório.")
-            .MaximumLength(50);
+            .NotEmpty().WithMessage("Modelo é obrigatório")
+            .MaximumLength(50).WithMessage("Modelo deve ter no máximo 50 caracteres");
 
         RuleFor(x => x.Cor)
-            .NotEmpty().WithMessage("A cor é obrigatória.")
-            .MaximumLength(30);
+            .NotEmpty().WithMessage("Cor é obrigatória")
+            .MaximumLength(20).WithMessage("Cor deve ter no máximo 20 caracteres");
 
-        RuleFor(x => x.CpfHospede)
-            .NotEmpty().WithMessage("O CPF do hóspede é obrigatório.")
-            .MaximumLength(14);
+        RuleFor(x => x.CPFHospede)
+            .NotEmpty().WithMessage("CPF do hóspede é obrigatório")
+            .MaximumLength(14).WithMessage("CPF deve ter no máximo 14 caracteres");
+
+        RuleFor(x => x.Observacoes)
+            .MaximumLength(500).WithMessage("Observações deve ter no máximo 500 caracteres")
+            .When(x => !string.IsNullOrEmpty(x.Observacoes));
     }
 }

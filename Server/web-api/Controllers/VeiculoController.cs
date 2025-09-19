@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
 using GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo;
 using FluentResults;
 using MediatR;
@@ -16,39 +16,33 @@ public class VeiculoController(IMediator mediator, IMapper mapper) : ControllerB
     [HttpPost]
     public async Task<ActionResult<CadastrarVeiculoResponse>> Cadastrar(CadastrarVeiculoRequest request)
     {
-        try
+        var command = mapper.Map<CadastrarVeiculoCommand>(request);
+
+        var result = await mediator.Send(command);
+
+        if (result.IsFailed)
         {
-            var command = mapper.Map<CadastrarVeiculoCommand>(request);
-            var result = await mediator.Send(command);
-
-            if (result.IsFailed)
+            if (result.HasError(e => e.HasMetadataKey("TipoErro")))
             {
-                if (result.HasError(e => e.HasMetadataKey("TipoErro")))
-                {
-                    var errosDeValidacao = result.Errors
-                        .SelectMany(e => e.Reasons.OfType<IError>())
-                        .Select(e => e.Message);
+                var errosDeValidacao = result.Errors
+                    .SelectMany(e => e.Reasons.OfType<IError>())
+                    .Select(e => e.Message);
 
-                    return BadRequest(errosDeValidacao);
-                }
-
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest(errosDeValidacao);
             }
 
-            var response = mapper.Map<CadastrarVeiculoResponse>(result.Value);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
-            return Created(string.Empty, response);
-        }
-        catch (Exception ex)
-        {
-            return Problem(ex.Message, statusCode: 500);
-        }
+        var response = mapper.Map<CadastrarVeiculoResponse>(result.Value);
+
+        return Created(string.Empty, response);
     }
 
-    [HttpPut("{ticket:guid}")]
-    public async Task<ActionResult<EditarVeiculoResponse>> Editar(Guid ticket, EditarVeiculoRequest request)
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<EditarVeiculoResponse>> Editar(Guid id, EditarVeiculoRequest request)
     {
-        var command = mapper.Map<(Guid, EditarVeiculoRequest), EditarVeiculoCommand>((ticket, request));
+        var command = mapper.Map<(Guid, EditarVeiculoRequest), EditarVeiculoCommand>((id, request));
 
         var result = await mediator.Send(command);
 
@@ -71,10 +65,10 @@ public class VeiculoController(IMediator mediator, IMapper mapper) : ControllerB
         return Ok(response);
     }
 
-    [HttpDelete("{ticket:guid}")]
-    public async Task<ActionResult> Excluir(Guid ticket)
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<ExcluirVeiculoResponse>> Excluir(Guid id)
     {
-        var command = mapper.Map<ExcluirVeiculoCommand>(ticket);
+        var command = mapper.Map<ExcluirVeiculoCommand>(id);
 
         var result = await mediator.Send(command);
 
@@ -83,8 +77,12 @@ public class VeiculoController(IMediator mediator, IMapper mapper) : ControllerB
 
         return NoContent();
     }
+
     [HttpGet]
-    public async Task<ActionResult<SelecionarVeiculosResponse>> SelecionarTodos([FromQuery] SelecionarVeiculosRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<SelecionarVeiculosResponse>> SelecionarRegistros(
+        [FromQuery] SelecionarVeiculosRequest? request,
+        CancellationToken cancellationToken
+    )
     {
         var query = mapper.Map<SelecionarVeiculosQuery>(request);
 
@@ -98,17 +96,18 @@ public class VeiculoController(IMediator mediator, IMapper mapper) : ControllerB
         return Ok(response);
     }
 
-    [HttpGet("{ticket:guid}")]
-    public async Task<ActionResult<SelecionarVeiculoPorTicketResult>> SelecionarPorId(Guid ticket)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<SelecionarVeiculoPorIdResponse>> SelecionarRegistroPorId(Guid id)
     {
-        var query = new SelecionarVeiculoPorTicketQuery(ticket);
+        var query = mapper.Map<SelecionarVeiculoPorIdQuery>(id);
 
         var result = await mediator.Send(query);
 
         if (result.IsFailed)
-            return NotFound(ticket);
+            return NotFound(id);
 
-        return Ok(result.Value);
+        var response = mapper.Map<SelecionarVeiculoPorIdResponse>(result.Value);
+
+        return Ok(response);
     }
-
 }

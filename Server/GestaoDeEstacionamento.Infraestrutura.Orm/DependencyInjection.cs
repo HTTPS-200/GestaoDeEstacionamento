@@ -1,10 +1,8 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloCheckIn;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloSaidaLiberacao;
@@ -14,6 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloRelatorio;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVeiculo;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloTicket;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm
 {
@@ -26,7 +28,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
             services.AddScoped<IRepositorioFatura, RepositorioFaturaEmOrm>();
             services.AddScoped<IRepositorioVaga, RepositorioVagaEmOrm>();
             services.AddScoped<IRepositorioSaida, RepositorioSaidaEmOrm>();
-            services.AddScoped<IRepositorioTicket, RepositorioChekInEmOrm>();
+            services.AddScoped<IRepositorioTicket, RepositorioTicketEmOrm>();
             services.AddScoped<IRepositorioRelatorioFinanceiro, RepositorioRelatorioFinanceiroEmOrm>();
             services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
 

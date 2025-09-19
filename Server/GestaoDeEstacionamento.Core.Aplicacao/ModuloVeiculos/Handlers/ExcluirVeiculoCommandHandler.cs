@@ -1,48 +1,42 @@
-﻿using FluentResults;
+﻿using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
+using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
+using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
-using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
 
-namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Handlers;
+namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Handlers;
 
-public class ExcluirVeiculoCommandHandler : IRequestHandler<ExcluirVeiculoCommand, Result<ExcluirVeiculoResult>>
+public class ExcluirVeiculoCommandHandler(
+    IRepositorioVeiculo repositorioVeiculo,
+    ITenantProvider tenantProvider,
+    IUnitOfWork unitOfWork,
+    IDistributedCache cache,
+    ILogger<ExcluirVeiculoCommandHandler> logger
+) : IRequestHandler<ExcluirVeiculoCommand, Result<ExcluirVeiculoResult>>
 {
-    private readonly IRepositorioVeiculo _repositorio;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IDistributedCache _cache;
-    private readonly ILogger<ExcluirVeiculoCommandHandler> _logger;
-
-    public ExcluirVeiculoCommandHandler(
-        IRepositorioVeiculo repositorio,
-        IUnitOfWork unitOfWork,
-        IDistributedCache cache,
-        ILogger<ExcluirVeiculoCommandHandler> logger)
-    {
-        _repositorio = repositorio;
-        _unitOfWork = unitOfWork;
-        _cache = cache;
-        _logger = logger;
-    }
-
-    public async Task<Result<ExcluirVeiculoResult>> Handle(ExcluirVeiculoCommand command, CancellationToken cancellationToken)
+    public async Task<Result<ExcluirVeiculoResult>> Handle(
+        ExcluirVeiculoCommand command, CancellationToken cancellationToken)
     {
         try
         {
-            await _repositorio.ExcluirAsync(command.Ticket);
-            await _unitOfWork.CommitAsync();
+            await repositorioVeiculo.ExcluirAsync(command.Id);
+            await unitOfWork.CommitAsync();
 
-            await _cache.RemoveAsync("veiculos:all", cancellationToken);
+            var cacheKey = $"veiculos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
+            await cache.RemoveAsync(cacheKey, cancellationToken);
 
-            return Result.Ok(new ExcluirVeiculoResult());
+            var result = new ExcluirVeiculoResult();
+            return Result.Ok(result);
         }
         catch (Exception ex)
         {
-            await _unitOfWork.RollbackAsync();
-            _logger.LogError(ex, "Erro ao excluir veículo {@Veiculo}", command);
-            return Result.Fail("Erro interno ao excluir veículo.");
+            await unitOfWork.RollbackAsync();
+            logger.LogError(ex, "Ocorreu um erro durante a exclusão do veículo {@Registro}.", command);
+            return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }
     }
 }

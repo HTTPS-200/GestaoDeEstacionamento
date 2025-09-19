@@ -1,69 +1,60 @@
 ﻿using AutoMapper;
+using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
 using System.Text.Json;
-using System.Collections.Immutable;
 
-namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Handlers;
+namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Handlers;
 
-public class SelecionarVeiculosQueryHandler : IRequestHandler<SelecionarVeiculosQuery, Result<SelecionarVeiculosResult>>
+public class SelecionarVeiculosQueryHandler(
+    IRepositorioVeiculo repositorioVeiculo,
+    ITenantProvider tenantProvider,
+    IMapper mapper,
+    IDistributedCache cache,
+    ILogger<SelecionarVeiculosQueryHandler> logger
+) : IRequestHandler<SelecionarVeiculosQuery, Result<SelecionarVeiculosResult>>
 {
-    private readonly IRepositorioVeiculo _repositorio;
-    private readonly IMapper _mapper;
-    private readonly IDistributedCache _cache;
-    private readonly ILogger<SelecionarVeiculosQueryHandler> _logger;
-
-    public SelecionarVeiculosQueryHandler(
-        IRepositorioVeiculo repositorio,
-        IMapper mapper,
-        IDistributedCache cache,
-        ILogger<SelecionarVeiculosQueryHandler> logger)
-    {
-        _repositorio = repositorio;
-        _mapper = mapper;
-        _cache = cache;
-        _logger = logger;
-    }
-
-    public async Task<Result<SelecionarVeiculosResult>> Handle(SelecionarVeiculosQuery query, CancellationToken cancellationToken)
+    public async Task<Result<SelecionarVeiculosResult>> Handle(
+        SelecionarVeiculosQuery query, CancellationToken cancellationToken)
     {
         try
         {
-            var cacheKey = query.Quantidade.HasValue ? $"veiculos:q={query.Quantidade.Value}" : "veiculos:all";
+            var cacheQuery = query.Quantidade.HasValue ? $"q={query.Quantidade.Value}" : "q=all";
+            var cacheKey = $"veiculos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:{cacheQuery}";
 
-            var jsonString = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            // 1) Tenta acessar o cache
+            var jsonString = await cache.GetStringAsync(cacheKey, cancellationToken);
+
             if (!string.IsNullOrWhiteSpace(jsonString))
             {
                 var resultadoEmCache = JsonSerializer.Deserialize<SelecionarVeiculosResult>(jsonString);
-                if (resultadoEmCache != null) return Result.Ok(resultadoEmCache);
+                if (resultadoEmCache is not null)
+                    return Result.Ok(resultadoEmCache);
             }
 
+            // 2) Cache miss -> busca no repositório
             var registros = query.Quantidade.HasValue ?
-                await _repositorio.SelecionarRegistrosAsync(query.Quantidade.Value) :
-                await _repositorio.SelecionarRegistrosAsync();
+                await repositorioVeiculo.SelecionarRegistrosAsync(query.Quantidade.Value) :
+                await repositorioVeiculo.SelecionarRegistrosAsync();
 
-            var veiculosDto = registros
-                .Select(v => _mapper.Map<SelecionarVeiculosDto>(v))
-                .ToImmutableList();
+            var result = mapper.Map<SelecionarVeiculosResult>(registros);
 
-            var result = new SelecionarVeiculosResult(
-     veiculosDto.Count,
-     veiculosDto
-);
-
+            // 3) Salva os resultados novos no cache
             var jsonPayload = JsonSerializer.Serialize(result);
-            await _cache.SetStringAsync(cacheKey, jsonPayload, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) }, cancellationToken);
+            var cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) };
+            await cache.SetStringAsync(cacheKey, jsonPayload, cacheOptions, cancellationToken);
 
             return Result.Ok(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao selecionar veículos {@Query}", query);
-            return Result.Fail($"Erro interno ao selecionar veículos: {ex.Message}");
+            logger.LogError(ex, "Ocorreu um erro durante a seleção dos veículos {@Registros}.", query);
+            return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }
     }
 }

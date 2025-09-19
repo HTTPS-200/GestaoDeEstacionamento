@@ -1,14 +1,14 @@
-﻿namespace GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo
-{
-    public record SelecionarVeiculoPorIdRequest(Guid TicketId);
+﻿namespace GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo;
 
-    public record SelecionarVeiculoPorIdResponse(
-        Guid TicketId,
-        string Placa,
-        string Modelo,
-        string Cor,
-        string CpfHospede,
-        string? Observacoes,
-        DateTime DataEntrada
-    );
-}
+public record SelecionarVeiculoPorIdRequest(Guid Id);
+
+public record SelecionarVeiculoPorIdResponse(
+    Guid Id,
+    string Placa,
+    string Modelo,
+    string Cor,
+    string CPFHospede,
+    string? Observacoes,
+    DateTime DataEntrada,
+    DateTime? DataSaida
+);

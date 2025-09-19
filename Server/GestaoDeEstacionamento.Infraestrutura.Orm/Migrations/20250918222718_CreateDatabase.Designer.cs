@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250917085630_AddRefreshTokenTable")]
-    partial class AddRefreshTokenTable
+    [Migration("20250918222718_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,87 +151,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Ticket", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("DataEntrada")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Numero")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("VeiculoId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Numero")
-                        .IsUnique();
-
-                    b.HasIndex("VeiculoId");
-
-                    b.ToTable("Tickets", (string)null);
-                });
-
-            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Veiculo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cor")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<string>("CpfHospede")
-                        .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("character varying(14)");
-
-                    b.Property<DateTime>("DataEntrada")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Modelo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Observacoes")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Placa")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<Guid>("Ticket")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Placa")
-                        .IsUnique();
-
-                    b.ToTable("Veiculos", (string)null);
-                });
-
             modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento.Fatura", b =>
                 {
                     b.Property<Guid>("Id")
@@ -276,38 +195,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                     b.ToTable("Fatura");
                 });
 
-            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas.Vaga", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("NumeroDaVaga")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Ocupada")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("VeiculoEstacionadoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Zona")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.HasIndex("VeiculoEstacionadoId");
-
-                    b.ToTable("Vaga");
-                });
-
             modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio.RelatorioFinanceiro", b =>
                 {
                     b.Property<Guid>("Id")
@@ -350,6 +237,121 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                     b.HasIndex("TicketId");
 
                     b.ToTable("Saida");
+                });
+
+            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NumeroTicket")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VeiculoId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("NumeroTicket")
+                        .IsUnique();
+
+                    b.HasIndex("VeiculoId");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloVaga.Vaga", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Identificador")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("VeiculoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Zona")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("VeiculoId");
+
+                    b.ToTable("Vaga");
+                });
+
+            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo.Veiculo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CPFHospede")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("character varying(14)");
+
+                    b.Property<string>("Cor")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("DataEntrada")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DataSaida")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Modelo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Observacoes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("Placa");
+
+                    b.ToTable("Veiculos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -481,26 +483,15 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Ticket", b =>
-                {
-                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Veiculo", "Veiculo")
-                        .WithMany("Tickets")
-                        .HasForeignKey("VeiculoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Veiculo");
-                });
-
             modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento.Fatura", b =>
                 {
-                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Ticket", "Ticket")
+                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Veiculo", "Veiculo")
+                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo.Veiculo", "Veiculo")
                         .WithMany()
                         .HasForeignKey("VeiculoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -511,24 +502,51 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                     b.Navigation("Veiculo");
                 });
 
-            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas.Vaga", b =>
-                {
-                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Veiculo", "VeiculoEstacionado")
-                        .WithMany()
-                        .HasForeignKey("VeiculoEstacionadoId");
-
-                    b.Navigation("VeiculoEstacionado");
-                });
-
             modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao.Saida", b =>
                 {
-                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Ticket", "Ticket")
+                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.Ticket", b =>
+                {
+                    b.OwnsOne("GestaoDeEstacionamento.Core.Dominio.ModuloTicket.TicketSequencialInfo", "SequencialInfo", b1 =>
+                        {
+                            b1.Property<Guid>("TicketId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<DateTime>("DataAtualizacao")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("DataAtualizacaoSequencial");
+
+                            b1.Property<int>("UltimoNumero")
+                                .HasColumnType("integer")
+                                .HasColumnName("UltimoNumeroSequencial");
+
+                            b1.HasKey("TicketId");
+
+                            b1.ToTable("Tickets");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TicketId");
+                        });
+
+                    b.Navigation("SequencialInfo")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloVaga.Vaga", b =>
+                {
+                    b.HasOne("GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo.Veiculo", "Veiculo")
+                        .WithMany()
+                        .HasForeignKey("VeiculoId");
+
+                    b.Navigation("Veiculo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -600,11 +618,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
             modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao.Usuario", b =>
                 {
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn.Veiculo", b =>
-                {
-                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

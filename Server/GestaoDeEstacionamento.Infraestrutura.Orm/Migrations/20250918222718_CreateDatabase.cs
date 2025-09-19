@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
 {
     /// <inheritdoc />
-    public partial class GestaoDeEstacionamento : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,18 +67,35 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tickets",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    NumeroTicket = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    VeiculoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Ativo = table.Column<bool>(type: "boolean", nullable: false),
+                    UltimoNumeroSequencial = table.Column<int>(type: "integer", nullable: false),
+                    DataAtualizacaoSequencial = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tickets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Veiculos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Ticket = table.Column<Guid>(type: "uuid", nullable: false),
-                    TicketId = table.Column<int>(type: "integer", nullable: false),
                     Placa = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Modelo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Cor = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    CpfHospede = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
+                    Cor = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    CPFHospede = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
                     Observacoes = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     DataEntrada = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DataSaida = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -193,46 +210,45 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tickets",
+                name: "TB_RefreshToken",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    VeiculoId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Numero = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<bool>(type: "boolean", nullable: false),
-                    DataEntrada = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Token = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    UsuarioId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Expiracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Usado = table.Column<bool>(type: "boolean", nullable: false),
+                    Revogado = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tickets", x => x.Id);
+                    table.PrimaryKey("PK_TB_RefreshToken", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_Veiculos_VeiculoId",
-                        column: x => x.VeiculoId,
-                        principalTable: "Veiculos",
+                        name: "FK_TB_RefreshToken_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vaga",
+                name: "Saida",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    NumeroDaVaga = table.Column<string>(type: "text", nullable: false),
-                    Zona = table.Column<string>(type: "text", nullable: false),
-                    Ocupada = table.Column<bool>(type: "boolean", nullable: false),
-                    VeiculoEstacionadoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TicketId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DataSaida = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vaga", x => x.Id);
+                    table.PrimaryKey("PK_Saida", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vaga_Veiculos_VeiculoEstacionadoId",
-                        column: x => x.VeiculoEstacionadoId,
-                        principalTable: "Veiculos",
-                        principalColumn: "Id");
+                        name: "FK_Saida_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -268,23 +284,24 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Saida",
+                name: "Vaga",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TicketId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DataSaida = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Identificador = table.Column<string>(type: "text", nullable: false),
+                    Zona = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    VeiculoId = table.Column<Guid>(type: "uuid", nullable: true),
                     UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Saida", x => x.Id);
+                    table.PrimaryKey("PK_Vaga", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Saida_Tickets_TicketId",
-                        column: x => x.TicketId,
-                        principalTable: "Tickets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_Vaga_Veiculos_VeiculoId",
+                        column: x => x.VeiculoId,
+                        principalTable: "Veiculos",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -381,9 +398,20 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                 column: "TicketId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_Numero",
+                name: "IX_TB_RefreshToken_UsuarioId",
+                table: "TB_RefreshToken",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_Id",
                 table: "Tickets",
-                column: "Numero",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_NumeroTicket",
+                table: "Tickets",
+                column: "NumeroTicket",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -398,15 +426,20 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vaga_VeiculoEstacionadoId",
+                name: "IX_Vaga_VeiculoId",
                 table: "Vaga",
-                column: "VeiculoEstacionadoId");
+                column: "VeiculoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Veiculos_Id",
+                table: "Veiculos",
+                column: "Id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Veiculos_Placa",
                 table: "Veiculos",
-                column: "Placa",
-                unique: true);
+                column: "Placa");
         }
 
         /// <inheritdoc />
@@ -434,19 +467,22 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                 name: "Saida");
 
             migrationBuilder.DropTable(
+                name: "TB_RefreshToken");
+
+            migrationBuilder.DropTable(
                 name: "Vaga");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Fatura");
 
             migrationBuilder.DropTable(
                 name: "RelatorioFinanceiro");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Tickets");

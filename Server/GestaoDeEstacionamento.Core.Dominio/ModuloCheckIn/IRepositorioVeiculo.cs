@@ -1,10 +1,10 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 
-namespace GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+namespace GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
+
 public interface IRepositorioVeiculo : IRepositorio<Veiculo>
 {
-    List<Veiculo> ObterPorPlaca(string placa);
-    List<Veiculo> ObterVeiculosEstacionados();
-    Veiculo? ObterPorTicket(string numeroTicket);
+    Task<List<Veiculo>> ObterPorPlaca(string placa);
+    Task<List<Veiculo>> ObterVeiculosEstacionados();
+    Task<Veiculo?> ObterPorId(Guid id);
 }

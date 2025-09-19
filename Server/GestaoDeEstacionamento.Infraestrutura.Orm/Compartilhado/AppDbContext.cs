@@ -1,6 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
@@ -51,7 +50,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
                     .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Veiculo>()
-                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
+             .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
 
             }

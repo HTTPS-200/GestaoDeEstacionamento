@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
 using GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo;
-using CoreSelecionarVeiculosDto = GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands.SelecionarVeiculosDto;
-using WebSelecionarVeiculosDto = GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo.SelecionarVeiculosDto;
-
-
 using System.Collections.Immutable;
 
 namespace GestaoDeEstacionamento.WebApi.AutoMapper;
@@ -14,62 +10,44 @@ public class VeiculoModelsMappingProfile : Profile
     public VeiculoModelsMappingProfile()
     {
         CreateMap<CadastrarVeiculoRequest, CadastrarVeiculoCommand>();
+        CreateMap<CadastrarVeiculoResult, CadastrarVeiculoResponse>();
 
-        CreateMap<EditarVeiculoRequest, EditarVeiculoCommand>()
-     .ForMember(dest => dest.Ticket, opt => opt.Ignore())
-     .ForMember(dest => dest.DataEntrada, opt => opt.Ignore());
-
-        CreateMap<SelecionarVeiculosRequest, SelecionarVeiculosQuery>()
-            .ConstructUsing(src => new SelecionarVeiculosQuery(src.Quantidade));
-
-        CreateMap<CadastrarVeiculoResult, CadastrarVeiculoResponse>()
-            .ConvertUsing(src => new CadastrarVeiculoResponse(
-                src.Ticket,
-                src.Placa,
-                src.Modelo,
-                src.Cor,
-                src.CpfHospede,
-                src.Observacoes,
-                src.DataEntrada
+        CreateMap<(Guid, EditarVeiculoRequest), EditarVeiculoCommand>()
+            .ConvertUsing(src => new EditarVeiculoCommand(
+                src.Item1,
+                src.Item2.Placa,
+                src.Item2.Modelo,
+                src.Item2.Cor,
+                src.Item2.CPFHospede,
+                src.Item2.Observacoes
             ));
 
-        CreateMap<EditarVeiculoResult, EditarVeiculoResponse>()
-            .ConvertUsing(src => new EditarVeiculoResponse(
-                src.TicketId,
-                src.Placa,
-                src.Modelo,
-                src.Cor,
-                src.CpfHospede,
-                src.Observacoes,
-                src.DataEntrada
-            ));
+        CreateMap<EditarVeiculoResult, EditarVeiculoResponse>();
 
-        CreateMap<SelecionarVeiculoPorTicketResult, SelecionarVeiculoPorIdResponse>()
-            .ConvertUsing(src => new SelecionarVeiculoPorIdResponse(
-                src.Ticket,
-                src.Placa,
-                src.Modelo,
-                src.Cor,
-                src.CpfHospede,
-                src.Observacoes,
-                src.DataEntrada
-            ));
+        CreateMap<Guid, ExcluirVeiculoCommand>()
+            .ConstructUsing(src => new ExcluirVeiculoCommand(src));
 
-        CreateMap<CoreSelecionarVeiculosDto, WebSelecionarVeiculosDto>()
-     .ConvertUsing(src => new WebSelecionarVeiculosDto(
-         src.TicketId,
-         src.Placa,
-         src.Modelo,
-         src.Cor,
-         src.CpfHospede,
-         src.Observacoes,
-         src.DataEntrada
-     ));
+        CreateMap<SelecionarVeiculosRequest, SelecionarVeiculosQuery>();
 
         CreateMap<SelecionarVeiculosResult, SelecionarVeiculosResponse>()
             .ConvertUsing((src, dest, ctx) => new SelecionarVeiculosResponse(
                 src.Veiculos.Count,
-                src.Veiculos.Select(v => ctx.Mapper.Map<WebSelecionarVeiculosDto>(v)).ToImmutableList()
+                src?.Veiculos.Select(v => ctx.Mapper.Map<SelecionarVeiculosDto>(v)).ToImmutableList() ?? ImmutableList<SelecionarVeiculosDto>.Empty
+            ));
+
+        CreateMap<Guid, SelecionarVeiculoPorIdQuery>()
+            .ConvertUsing(src => new SelecionarVeiculoPorIdQuery(src));
+
+        CreateMap<SelecionarVeiculoPorIdResult, SelecionarVeiculoPorIdResponse>()
+            .ConvertUsing(src => new SelecionarVeiculoPorIdResponse(
+                src.Id,
+                src.Placa,
+                src.Modelo,
+                src.Cor,
+                src.CPFHospede,
+                src.Observacoes,
+                src.DataEntrada,
+                src.DataSaida
             ));
     }
 }

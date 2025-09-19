@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +12,6 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.FluentValidation.ModuloVeiculo
     {
         public EditarVeiculoCommandValidator()
         {
-            RuleFor(x => x.Ticket)
-               .NotEmpty().WithMessage("Ticket inválido.");
 
             RuleFor(x => x.Placa)
                 .NotEmpty().WithMessage("A placa é obrigatória.")
@@ -27,9 +25,6 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.FluentValidation.ModuloVeiculo
                 .NotEmpty().WithMessage("A cor é obrigatória.")
                 .MaximumLength(30);
 
-            RuleFor(x => x.CpfHospede)
-                .NotEmpty().WithMessage("O CPF do hóspede é obrigatório.")
-                .MaximumLength(14);
         }
     }
 }

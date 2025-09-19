@@ -1,24 +1,21 @@
-﻿// Command
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
 
+namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
+
 public record EditarVeiculoCommand(
-    Guid Ticket,  // Guid
+    Guid Id,
     string Placa,
     string Modelo,
     string Cor,
-    string CpfHospede,
-    DateTime DataEntrada,
+    string CPFHospede,
     string? Observacoes = null
 ) : IRequest<Result<EditarVeiculoResult>>;
 
-// Result
 public record EditarVeiculoResult(
-    Guid TicketId,   // Guid (coerente com API)
     string Placa,
     string Modelo,
     string Cor,
-    string CpfHospede,
-    string? Observacoes,
-    DateTime DataEntrada
+    string CPFHospede,
+    string? Observacoes
 );

@@ -1,8 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
 
-namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
+namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
 
-public record ExcluirVeiculoCommand(Guid Ticket) : IRequest<Result<ExcluirVeiculoResult>>;
+public record ExcluirVeiculoCommand(Guid Id) : IRequest<Result<ExcluirVeiculoResult>>;
 
 public record ExcluirVeiculoResult();

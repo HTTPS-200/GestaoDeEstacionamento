@@ -1,63 +1,62 @@
 ﻿using AutoMapper;
+using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
+using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using FluentResults;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
-using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
-using FluentValidation;
 
-namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Handlers;
+namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Handlers;
 
-public class EditarVeiculoCommandHandler : IRequestHandler<EditarVeiculoCommand, Result<EditarVeiculoResult>>
+public class EditarVeiculoCommandHandler(
+    IRepositorioVeiculo repositorioVeiculo,
+    ITenantProvider tenantProvider,
+    IUnitOfWork unitOfWork,
+    IMapper mapper,
+    IDistributedCache cache,
+    IValidator<EditarVeiculoCommand> validator,
+    ILogger<EditarVeiculoCommandHandler> logger
+) : IRequestHandler<EditarVeiculoCommand, Result<EditarVeiculoResult>>
 {
-    private readonly IRepositorioVeiculo _repositorio;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-    private readonly IDistributedCache _cache;
-    private readonly IValidator<EditarVeiculoCommand> _validator;
-    private readonly ILogger<EditarVeiculoCommandHandler> _logger;
-
-    public EditarVeiculoCommandHandler(
-        IRepositorioVeiculo repositorio,
-        IUnitOfWork unitOfWork,
-        IMapper mapper,
-        IDistributedCache cache,
-        IValidator<EditarVeiculoCommand> validator,
-        ILogger<EditarVeiculoCommandHandler> logger)
+    public async Task<Result<EditarVeiculoResult>> Handle(
+        EditarVeiculoCommand command, CancellationToken cancellationToken)
     {
-        _repositorio = repositorio;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _cache = cache;
-        _validator = validator;
-        _logger = logger;
-    }
+        var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
 
-    public async Task<Result<EditarVeiculoResult>> Handle(EditarVeiculoCommand command, CancellationToken cancellationToken)
-    {
-        var resultadoValidacao = await _validator.ValidateAsync(command, cancellationToken);
         if (!resultadoValidacao.IsValid)
-            return Result.Fail(string.Join(", ", resultadoValidacao.Errors.Select(e => e.ErrorMessage)));
+        {
+            var erros = resultadoValidacao.Errors.Select(e => e.ErrorMessage);
+            var erroFormatado = ResultadosErro.RequisicaoInvalidaErro(erros);
+            return Result.Fail(erroFormatado);
+        }
+
+        var registros = await repositorioVeiculo.SelecionarRegistrosAsync();
+
+        if (registros.Any(v => !v.Id.Equals(command.Id) && v.Placa.Equals(command.Placa)))
+            return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe um veículo registrado com esta placa."));
 
         try
         {
-            var veiculoEditado = _mapper.Map<Veiculo>(command);
+            var veiculoEditado = mapper.Map<Veiculo>(command);
+            await repositorioVeiculo.EditarAsync(command.Id, veiculoEditado);
+            await unitOfWork.CommitAsync();
 
-            await _repositorio.EditarAsync(command.Ticket, veiculoEditado);
-            await _unitOfWork.CommitAsync();
+            // Invalida o cache
+            var cacheKey = $"veiculos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
+            await cache.RemoveAsync(cacheKey, cancellationToken);
 
-            await _cache.RemoveAsync("veiculos:all", cancellationToken);
-
-            var result = _mapper.Map<EditarVeiculoResult>(veiculoEditado);
+            var result = mapper.Map<EditarVeiculoResult>(veiculoEditado);
             return Result.Ok(result);
         }
         catch (Exception ex)
         {
-            await _unitOfWork.RollbackAsync();
-            _logger.LogError(ex, "Erro ao editar veículo {@Veiculo}", command);
-            return Result.Fail("Erro interno ao editar veículo.");
+            await unitOfWork.RollbackAsync();
+            logger.LogError(ex, "Ocorreu um erro durante a edição do veículo {@Registro}.", command);
+            return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }
     }
 }

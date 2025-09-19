@@ -1,11 +1,12 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 
-namespace GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+namespace GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
+
 public interface IRepositorioTicket : IRepositorio<Ticket>
 {
-    Ticket? ObterPorNumero(string numeroTicket);
-    List<Ticket> ObterTicketsAtivos();
-    TicketSequencial ObterUltimoSequencial();
-    void AtualizarSequencial(TicketSequencial sequencial);
+    Task<Ticket?> ObterPorNumero(string numeroTicket);
+    Task<List<Ticket>> ObterTicketsAtivos();
+    Task<List<Ticket>> ObterPorVeiculoId(Guid veiculoId);
+    Task<int> ObterUltimoNumeroSequencial();
+    Task<int> GerarProximoNumeroSequencial();
 }

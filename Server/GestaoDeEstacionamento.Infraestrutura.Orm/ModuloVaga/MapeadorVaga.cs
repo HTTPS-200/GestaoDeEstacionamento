@@ -1,4 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -17,18 +18,8 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga
              .ValueGeneratedNever()
              .IsRequired();
 
-            builder.Property(x => x.NumeroDaVaga)
-                .IsRequired();
-
             builder.Property(x => x.Zona)
                 .IsRequired();
-
-            builder.Property(x => x.Ocupada)
-                .IsRequired();
-
-            builder.HasOne(x => x.VeiculoEstacionado)
-                .WithMany()
-                .HasForeignKey("VeiculoEstacionadoId");
 
             builder.HasIndex(x => x.Id)
                 .IsUnique();

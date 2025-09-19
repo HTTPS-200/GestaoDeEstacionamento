@@ -1,21 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿using GestaoDeEstacionamento.Core.Aplicacao.ModuloVeiculo.Commands;
+using System.Collections.Immutable;
 
-namespace GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo
-{
-    public record SelecionarVeiculosRequest(int? Quantidade);
+namespace GestaoDeEstacionamento.WebApi.Models.ModuloVeiculo;
 
-    public record SelecionarVeiculosDto(
-        Guid TicketId,
-        string Placa,
-        string Modelo,
-        string Cor,
-        string CpfHospede,
-        string? Observacoes,
-        DateTime DataEntrada
-    );
+public record SelecionarVeiculosRequest(int? Quantidade);
 
-    public record SelecionarVeiculosResponse(
-        int Quantidade,
-        ImmutableList<SelecionarVeiculosDto> Veiculos
-    );
-}
+public record SelecionarVeiculosResponse(
+    int Quantidade,
+    ImmutableList<SelecionarVeiculosDto> Veiculos
+);

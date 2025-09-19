@@ -1,5 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 public class Saida : EntidadeBase<Saida>

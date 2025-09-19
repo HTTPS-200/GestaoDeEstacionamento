@@ -35,13 +35,12 @@ public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
         builder.Property(x => x.DataEntrada)
             .IsRequired();
 
+        builder.Property(x => x.UsuarioId) 
+          .IsRequired();
+
+
         builder.Property(x => x.DataSaida)
             .IsRequired(false);
-
-        builder.HasMany(x => x.Tickets)
-            .WithOne(t => t.Veiculo)
-            .HasForeignKey(t => t.VeiculoId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.Id)
             .IsUnique();
