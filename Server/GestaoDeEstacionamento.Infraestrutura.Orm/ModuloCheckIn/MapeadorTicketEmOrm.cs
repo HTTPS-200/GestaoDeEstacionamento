@@ -8,6 +8,8 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
 {
     public void Configure(EntityTypeBuilder<Ticket> builder)
     {
+        builder.ToTable("TBTicket");
+
         builder.Property(x => x.Id)
             .ValueGeneratedNever()
             .IsRequired();
@@ -20,9 +22,13 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
             .IsRequired();
 
         builder.Property(x => x.DataCriacao)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
 
         builder.Property(x => x.Ativo)
+            .IsRequired();
+
+        builder.Property(x => x.UsuarioId)
             .IsRequired();
 
         builder.OwnsOne(x => x.SequencialInfo, sequencial =>
@@ -33,7 +39,8 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
 
             sequencial.Property(s => s.DataAtualizacao)
                 .IsRequired()
-                .HasColumnName("DataAtualizacaoSequencial");
+                .HasColumnName("DataAtualizacaoSequencial")
+                .HasColumnType("timestamp without time zone");
         });
 
         builder.HasIndex(x => x.Id)

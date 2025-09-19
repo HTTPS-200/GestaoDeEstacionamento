@@ -9,7 +9,7 @@ public class Ticket : EntidadeBase<Ticket>
     public Guid VeiculoId { get; set; }
     public DateTime DataCriacao { get; set; }
     public bool Ativo { get; set; }
-
+    public Guid UsuarioId { get; set; }
     public TicketSequencialInfo SequencialInfo { get; set; }
 
     [ExcludeFromCodeCoverage]
@@ -20,7 +20,7 @@ public class Ticket : EntidadeBase<Ticket>
         Id = Guid.NewGuid();
         NumeroTicket = numeroTicket;
         VeiculoId = veiculoId;
-        DataCriacao = DateTime.Now;
+        DataCriacao = DateTime.UtcNow;
         Ativo = true;
         SequencialInfo = new TicketSequencialInfo(ultimoNumeroSequencial);
     }
@@ -46,13 +46,13 @@ public class TicketSequencialInfo
     public TicketSequencialInfo(int ultimoNumero)
     {
         UltimoNumero = ultimoNumero;
-        DataAtualizacao = DateTime.Now;
+        DataAtualizacao = DateTime.UtcNow;
     }
 
     public int ProximoNumero()
     {
         UltimoNumero++;
-        DataAtualizacao = DateTime.Now;
+        DataAtualizacao = DateTime.UtcNow;
         return UltimoNumero;
     }
 }

@@ -14,6 +14,7 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
+using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 {
@@ -26,7 +27,8 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
         public DbSet<Fatura> Fatura { get; set; }
         public DbSet<Saida> Saida { get; set; }
         public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Ticket> Tickets { get; set; } = null!;
+        public DbSet<RegistroCheckIn> RegistrosCheckIn { get; set; } = null!;
         public DbSet<Vaga> Vaga { get; set; }
         public DbSet<Veiculo> Veiculos { get; set; }
 
@@ -41,13 +43,16 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
                .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Saida>()
-                    .HasQueryFilter(x => x.TicketId.Equals(tenantProvider.UsuarioId));
+                    .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Ticket>()
-                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
+               .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
+
+                modelBuilder.Entity<RegistroCheckIn>()
+                    .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<RelatorioFinanceiro>()
-                    .HasQueryFilter(x => x.Equals(tenantProvider.UsuarioId));
+                     .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Veiculo>()
              .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));

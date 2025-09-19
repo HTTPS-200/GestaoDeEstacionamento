@@ -7,6 +7,16 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloTicket;
 public class RepositorioTicketEmOrm(AppDbContext contexto)
     : RepositorioBaseEmOrm<Ticket>(contexto), IRepositorioTicket
 {
+    public override async Task<List<Ticket>> SelecionarRegistrosAsync()
+    {
+        return await registros.ToListAsync();
+    }
+
+    public override async Task<Ticket?> SelecionarRegistroPorIdAsync(Guid idRegistro)
+    {
+        return await registros.FirstOrDefaultAsync(x => x.Id == idRegistro);
+    }
+
     public async Task<Ticket?> ObterPorNumero(string numeroTicket)
     {
         return await registros
@@ -29,17 +39,15 @@ public class RepositorioTicketEmOrm(AppDbContext contexto)
 
     public async Task<int> ObterUltimoNumeroSequencial()
     {
-        // Busca o ticket mais recente e pega o último número sequencial
         var ultimoTicket = await registros
-            .OrderByDescending(t => t.SequencialInfo.DataAtualizacao)
+            .OrderByDescending(t => t.SequencialInfo.UltimoNumero)
             .FirstOrDefaultAsync();
 
         return ultimoTicket?.SequencialInfo.UltimoNumero ?? 0;
     }
 
-    public async Task<int> GerarProximoNumeroSequencial()
+    public async Task AtualizarUltimoNumeroSequencial(int ultimoNumero)
     {
-        var ultimoNumero = await ObterUltimoNumeroSequencial();
-        return ultimoNumero + 1;
+        await Task.CompletedTask;
     }
 }

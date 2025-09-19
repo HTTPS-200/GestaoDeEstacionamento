@@ -16,6 +16,8 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVeiculo;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloTicket;
+using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloCheckIn;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm
 {
@@ -31,6 +33,8 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
             services.AddScoped<IRepositorioTicket, RepositorioTicketEmOrm>();
             services.AddScoped<IRepositorioRelatorioFinanceiro, RepositorioRelatorioFinanceiroEmOrm>();
             services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
+            services.AddScoped<IRepositorioRegistroCheckIn, RepositorioRegistroCheckInEmOrm>();
+
 
             services.AddEntityFrameworkConfig(configuration);
 
