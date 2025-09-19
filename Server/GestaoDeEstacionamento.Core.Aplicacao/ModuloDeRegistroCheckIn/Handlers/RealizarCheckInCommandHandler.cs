@@ -27,7 +27,7 @@ public class RealizarCheckInCommandHandler(
 ) : IRequestHandler<RealizarCheckInCommand, Result<RealizarCheckInResult>>
 {
     public async Task<Result<RealizarCheckInResult>> Handle(
-        RealizarCheckInCommand command, CancellationToken cancellationToken)
+     RealizarCheckInCommand command, CancellationToken cancellationToken)
     {
         var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
 
@@ -40,69 +40,49 @@ public class RealizarCheckInCommandHandler(
 
         try
         {
-            // Verifica se já existe um check-in ativo para esta placa
-            var checkInAtivo = await repositorioCheckIn.ObterPorPlacaVeiculo(command.Placa);
-            if (checkInAtivo != null)
+            // 1. Busca o veículo pela placa
+            var veiculos = await repositorioVeiculo.ObterPorPlaca(command.PlacaVeiculo);
+            var veiculo = veiculos.FirstOrDefault();
+
+            if (veiculo == null)
+            {
+                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(
+                    $"Veículo com placa {command.PlacaVeiculo} não encontrado"));
+            }
+
+            // 2. Busca o ticket EXISTENTE para este veículo (não cria novo)
+            var ticketsDoVeiculo = await repositorioTicket.ObterPorVeiculoId(veiculo.Id);
+            var ticket = ticketsDoVeiculo.FirstOrDefault();
+
+            if (ticket == null)
+            {
+                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(
+                    $"Não existe ticket para o veículo com placa {command.PlacaVeiculo}"));
+            }
+
+            // 3. Verifica se já existe check-in ativo para este ticket
+            var checkInAtivo = await repositorioCheckIn.ObterPorNumeroTicket(ticket.NumeroTicket);
+            if (checkInAtivo != null && checkInAtivo.Ativo)
             {
                 return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
-                    $"Já existe um check-in ativo para o veículo com placa {command.Placa}"));
+                    $"Já existe um check-in ativo para o ticket {ticket.NumeroTicket}"));
             }
 
-            // Verifica se o veículo já existe no sistema
-            var veiculoExistente = await repositorioVeiculo.ObterPorPlaca(command.Placa);
-            Veiculo veiculo;
-
-            if (veiculoExistente != null && veiculoExistente.Any())
-            {
-                // Usa o veículo existente
-                veiculo = veiculoExistente.First();
-
-                // Atualiza o CPF do hóspede se necessário
-                if (veiculo.CPFHospede != command.CPFHospede)
-                {
-                    veiculo.CPFHospede = command.CPFHospede;
-                    await repositorioVeiculo.EditarAsync(veiculo.Id, veiculo);
-                }
-            }
-            else
-            {
-                // Cria um novo veículo com dados básicos
-                // Modelo e cor podem ser obtidos de uma API externa ou deixados em branco
-                veiculo = new Veiculo(
-                    command.Placa,
-                    "Não informado", // Modelo padrão
-                    "Não informada", // Cor padrão
-                    command.CPFHospede
-                );
-                veiculo.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
-                await repositorioVeiculo.CadastrarAsync(veiculo);
-            }
-
-            // Gera o número do ticket
-            var ultimoNumero = await repositorioTicket.ObterUltimoNumeroSequencial();
-            var proximoNumero = ultimoNumero + 1;
-            var numeroTicket = proximoNumero.ToString("D6");
-
-            // Cria o ticket
-            var ticket = new Ticket(numeroTicket, veiculo.Id, proximoNumero);
-            ticket.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
-            await repositorioTicket.CadastrarAsync(ticket);
-
-            // Cria o registro de check-in
+            // 4. Cria o registro de check-in usando o ticket EXISTENTE
             var registroCheckIn = new RegistroCheckIn(veiculo, ticket);
             registroCheckIn.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
-            await repositorioCheckIn.CadastrarAsync(registroCheckIn);
 
+            await repositorioCheckIn.CadastrarAsync(registroCheckIn);
             await unitOfWork.CommitAsync();
 
-            // Invalida caches
+            // 5. Invalida caches
             await InvalidarCaches(tenantProvider.UsuarioId.GetValueOrDefault());
 
             var result = new RealizarCheckInResult(
                 registroCheckIn.Id,
                 veiculo.Id,
                 ticket.Id,
-                numeroTicket,
+                ticket.NumeroTicket, // ← Usa o número do ticket existente
                 registroCheckIn.DataHoraCheckIn
             );
 

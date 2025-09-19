@@ -1,4 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
@@ -10,19 +11,26 @@ public class Ticket : EntidadeBase<Ticket>
     public DateTime DataCriacao { get; set; }
     public bool Ativo { get; set; }
     public Guid UsuarioId { get; set; }
-    public TicketSequencialInfo SequencialInfo { get; set; }
+
+    // Coluna persistida no banco
+    public int Sequencial { get; set; }
+
+    // Propriedade não mapeada para usar internamente
+    [NotMapped]
+    public TicketSequencialInfo SequencialInfo { get; private set; }
 
     [ExcludeFromCodeCoverage]
     public Ticket() { }
 
-    public Ticket(string numeroTicket, Guid veiculoId, int ultimoNumeroSequencial)
+    public Ticket(string numeroTicket, Guid veiculoId, int sequencial)
     {
         Id = Guid.NewGuid();
         NumeroTicket = numeroTicket;
         VeiculoId = veiculoId;
         DataCriacao = DateTime.UtcNow;
         Ativo = true;
-        SequencialInfo = new TicketSequencialInfo(ultimoNumeroSequencial);
+        Sequencial = sequencial;
+        SequencialInfo = new TicketSequencialInfo(sequencial);
     }
 
     public override void AtualizarRegistro(Ticket registroEditado)
@@ -32,6 +40,12 @@ public class Ticket : EntidadeBase<Ticket>
         Ativo = registroEditado.Ativo;
         SequencialInfo = registroEditado.SequencialInfo;
     }
+    public void AtualizarSequencial(int novoSequencial)
+    {
+        Sequencial = novoSequencial;
+        SequencialInfo = new TicketSequencialInfo(novoSequencial);
+    }
+
 
     public void Encerrar()
     {

@@ -40,10 +40,10 @@ public class RepositorioTicketEmOrm(AppDbContext contexto)
     public async Task<int> ObterUltimoNumeroSequencial()
     {
         var ultimoTicket = await registros
-            .OrderByDescending(t => t.SequencialInfo.UltimoNumero)
+            .OrderByDescending(t => t.Sequencial)
             .FirstOrDefaultAsync();
 
-        return ultimoTicket?.SequencialInfo.UltimoNumero ?? 0;
+        return ultimoTicket?.Sequencial ?? 0;
     }
 
     public async Task AtualizarUltimoNumeroSequencial(int ultimoNumero)

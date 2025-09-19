@@ -7,7 +7,7 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.FluentValidation.ModuloCheckIn
     {
         public RealizarCheckInCommandValidator()
         {
-            RuleFor(x => x.Placa)
+            RuleFor(x => x.PlacaVeiculo)
                 .NotEmpty().WithMessage("A placa do veículo é obrigatória.");
 
             RuleFor(x => x.CPFHospede)

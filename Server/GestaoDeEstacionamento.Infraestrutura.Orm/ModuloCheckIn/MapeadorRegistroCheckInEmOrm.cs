@@ -22,7 +22,7 @@ public class MapeadorRegistroCheckInEmOrm : IEntityTypeConfiguration<RegistroChe
 
         builder.Property(x => x.DataHoraCheckIn)
             .IsRequired()
-            .HasColumnType("timestamp without time zone");
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(x => x.NumeroTicket)
             .IsRequired()

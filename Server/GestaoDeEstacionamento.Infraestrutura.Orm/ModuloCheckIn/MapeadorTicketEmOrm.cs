@@ -23,7 +23,7 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
 
         builder.Property(x => x.DataCriacao)
             .IsRequired()
-            .HasColumnType("timestamp without time zone");
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(x => x.Ativo)
             .IsRequired();
@@ -40,7 +40,7 @@ public class MapeadorTicketEmOrm : IEntityTypeConfiguration<Ticket>
             sequencial.Property(s => s.DataAtualizacao)
                 .IsRequired()
                 .HasColumnName("DataAtualizacaoSequencial")
-                .HasColumnType("timestamp without time zone");
+                .HasColumnType("timestamp with time zone");
         });
 
         builder.HasIndex(x => x.Id)

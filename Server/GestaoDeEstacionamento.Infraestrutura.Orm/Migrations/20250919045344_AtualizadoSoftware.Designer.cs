@@ -3,6 +3,7 @@ using System;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250919045344_AtualizadoSoftware")]
+    partial class AtualizadoSoftware
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +160,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("DataHoraCheckIn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NumeroTicket")
                         .IsRequired()
@@ -285,15 +288,12 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NumeroTicket")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
-
-                    b.Property<int>("Sequencial")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uuid");
@@ -580,7 +580,7 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<DateTime>("DataAtualizacao")
-                                .HasColumnType("timestamp with time zone")
+                                .HasColumnType("timestamp without time zone")
                                 .HasColumnName("DataAtualizacaoSequencial");
 
                             b1.Property<int>("UltimoNumero")

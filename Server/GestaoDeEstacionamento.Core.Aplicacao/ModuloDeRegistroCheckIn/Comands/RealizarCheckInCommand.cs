@@ -4,7 +4,7 @@ using MediatR;
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckIn.Commands;
 
 public record RealizarCheckInCommand(
-    string Placa,
+     string PlacaVeiculo,
     string CPFHospede
 ) : IRequest<Result<RealizarCheckInResult>>;
 

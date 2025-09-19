@@ -1,7 +1,7 @@
 ﻿namespace GestaoDeEstacionamento.WebApi.Models.ModuloCheckIn;
 
 public record RealizarCheckInRequest(
-    string Placa,
+    string PlacaVeiculo,
     string CPFHospede
 );
 
