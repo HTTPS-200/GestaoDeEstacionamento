@@ -9,7 +9,10 @@ public record EditarVagaCommand(
     string Zona,
     bool Ocupada,
     Veiculo? Veiculo
-    ) : IRequest<IResult<EditarVagaResult>>;
+    ) : IRequest<IResult<EditarVagaResult>>
+{
+    public Guid Id { get; set; }
+}
 
 public record EditarVagaResult(
     string NomeDaVaga,

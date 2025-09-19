@@ -11,6 +11,9 @@ public class VagaMappingProfile : Profile
         CreateMap<CadastrarVagaCommand, Vaga>();
         CreateMap<Vaga, CadastrarVagaResult>();
 
+        CreateMap<EditarVagaCommand, Vaga>();
+        CreateMap<Vaga, EditarVagaResult>();
+
         CreateMap<IEnumerable<Vaga>, SelecionarVagasResult>()
            .ConvertUsing((src, dest, ctx) =>
                new SelecionarVagasResult(src?.Select(v => ctx.Mapper.Map<SelecionarVagasDto>(v))

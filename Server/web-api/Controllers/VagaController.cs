@@ -23,6 +23,20 @@ public class VagaController(IMediator mediator, IMapper mapper) : Controller
         return Created(string.Empty, response);
     }
 
+    public async Task<ActionResult<EditarVagaResponse>> Editar(Guid id, EditarVagaRequest request)
+    {
+        var command = mapper.Map<(Guid, EditarVagaRequest), EditarVagaCommand>((id, request));
+
+        var result = await mediator.Send(command);
+
+        if (result.IsFailed)
+            return BadRequest();
+
+        var response = mapper.Map<EditarVagaResponse>(result.Value);
+
+        return Ok(response);
+    }
+
     [HttpGet]
     public async Task<ActionResult<SelecionarVagasResponse>> SelecionarRegistros(
     [FromQuery] SelecionarVagasRequest? request)
