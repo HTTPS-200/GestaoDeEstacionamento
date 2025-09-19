@@ -1,0 +1,6 @@
+services:
+  gestaodeestacionamento.webapi:
+    image: ${DOCKER_REGISTRY-}gestaodeestacionamentowebapi
+    build:
+      context: .
+      dockerfile: web-api/Dockerfile

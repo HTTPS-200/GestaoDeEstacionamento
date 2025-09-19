@@ -1,6 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
-using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
@@ -18,6 +17,7 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloCheckIn;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm
 {

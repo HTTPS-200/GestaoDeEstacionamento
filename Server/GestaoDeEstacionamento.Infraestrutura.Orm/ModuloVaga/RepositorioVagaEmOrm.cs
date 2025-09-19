@@ -1,35 +1,51 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
-using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga
+namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga;
+
+public class RepositorioVagaEmOrm(AppDbContext contexto)
+    : RepositorioBaseEmOrm<Vaga>(contexto), IRepositorioVaga
 {
-    class RepositorioVagaEmOrm(AppDbContext contexto)
-        : RepositorioBaseEmOrm<Vaga>(contexto), IRepositorioVaga
+    public override async Task<List<Vaga>> SelecionarRegistrosAsync()
     {
-        public Vaga? ObterPorIdentificador(string identificador)
-        {
-            throw new NotImplementedException();
-        }
+        return await registros.ToListAsync();
+    }
 
-        public List<Vaga> ObterPorStatus(StatusVaga status)
-        {
-            throw new NotImplementedException();
-        }
+    public override async Task<Vaga?> SelecionarRegistroPorIdAsync(Guid idRegistro)
+    {
+        return await registros.FirstOrDefaultAsync(x => x.Id == idRegistro);
+    }
 
-        public List<Vaga> ObterVagasLivres()
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<List<Vaga>> ObterVagasLivres()
+    {
+        return await registros
+            .Where(v => !v.Ocupada)
+            .ToListAsync();
+    }
 
-        public List<Vaga> ObterVagasOcupadas()
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<List<Vaga>> ObterVagasOcupadas()
+    {
+        return await registros
+            .Where(v => v.Ocupada)
+            .ToListAsync();
+    }
+
+    public async Task<Vaga?> ObterPorIdentificador(string identificador)
+    {
+        return await registros
+            .FirstOrDefaultAsync(v => v.Identificador == identificador);
+    }
+
+    public async Task<Vaga?> ObterPorVeiculoId(Guid veiculoId)
+    {
+        return await registros
+            .FirstOrDefaultAsync(v => v.VeiculoId == veiculoId);
+    }
+
+    public async Task<bool> VerificarDisponibilidade(string identificador)
+    {
+        var vaga = await ObterPorIdentificador(identificador);
+        return vaga != null && !vaga.Ocupada;
     }
 }

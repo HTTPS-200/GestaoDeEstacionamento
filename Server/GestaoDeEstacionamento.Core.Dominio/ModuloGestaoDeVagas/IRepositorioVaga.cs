@@ -1,11 +1,12 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 
-namespace GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
+namespace GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
+
 public interface IRepositorioVaga : IRepositorio<Vaga>
 {
-    List<Vaga> ObterPorStatus(StatusVaga status);
-    Vaga? ObterPorIdentificador(string identificador);
-    List<Vaga> ObterVagasLivres();
-    List<Vaga> ObterVagasOcupadas();
+    Task<List<Vaga>> ObterVagasLivres();
+    Task<List<Vaga>> ObterVagasOcupadas();
+    Task<Vaga?> ObterPorIdentificador(string identificador);
+    Task<Vaga?> ObterPorVeiculoId(Guid veiculoId);
+    Task<bool> VerificarDisponibilidade(string identificador);
 }
