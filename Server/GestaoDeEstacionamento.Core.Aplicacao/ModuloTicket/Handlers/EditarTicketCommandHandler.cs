@@ -1,19 +1,19 @@
-﻿using AutoMapper;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
-using GestaoDeEstacionamento.Core.Aplicacao.ModuloTicket.Commands;
-using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
-using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
+using AutoMapper;
 using FluentResults;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-
-namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloTicket.Handlers;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloTicket.Commands;
+using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 
 public class EditarTicketCommandHandler(
     IRepositorioTicket repositorioTicket,
+    IRepositorioVeiculo repositorioVeiculo,
     ITenantProvider tenantProvider,
     IUnitOfWork unitOfWork,
     IMapper mapper,
@@ -30,36 +30,53 @@ public class EditarTicketCommandHandler(
         if (!resultadoValidacao.IsValid)
         {
             var erros = resultadoValidacao.Errors.Select(e => e.ErrorMessage);
-            var erroFormatado = ResultadosErro.RequisicaoInvalidaErro(erros);
-            return Result.Fail(erroFormatado);
+            return Result.Fail(string.Join("; ", erros));
         }
 
         try
         {
-            // Verifica se outro ticket já usa este número
-            var ticketComMesmoNumero = await repositorioTicket.ObterPorNumero(command.PlacaVeiculo);
-            if (ticketComMesmoNumero != null && ticketComMesmoNumero.Id != command.Id)
+            var ticketExistente = await repositorioTicket.SelecionarRegistroPorIdAsync(command.Id);
+            if (ticketExistente == null)
+                return Result.Fail("Ticket não encontrado.");
+
+            // Se veio placa → busca e atualiza o veículo vinculado
+            if (!string.IsNullOrWhiteSpace(command.PlacaVeiculo))
             {
-                return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
-                    $"Já existe um ticket com o número {command.PlacaVeiculo}"));
+                var veiculos = await repositorioVeiculo.ObterPorPlaca(command.PlacaVeiculo);
+
+                if (veiculos == null || veiculos.Count == 0)
+                    return Result.Fail("Veículo não encontrado.");
+
+                if (veiculos.Count > 1)
+                    return Result.Fail("Mais de um veículo encontrado com a mesma placa.");
+
+                ticketExistente.VeiculoId = veiculos.First().Id;
             }
 
-            var ticketEditado = mapper.Map<Ticket>(command);
-            await repositorioTicket.EditarAsync(command.Id, ticketEditado);
+            // Atualiza status ativo
+            ticketExistente.Ativo = command.Ativo;
+
+            await repositorioTicket.EditarAsync(command.Id, ticketExistente);
             await unitOfWork.CommitAsync();
 
             // Invalida cache
             var cacheKey = $"tickets:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
             await cache.RemoveAsync(cacheKey, cancellationToken);
 
-            var result = mapper.Map<EditarTicketResult>(ticketEditado);
+            var result = new EditarTicketResult(
+                ticketExistente.Id,
+                command.PlacaVeiculo ?? string.Empty,
+                ticketExistente.NumeroTicket,
+                ticketExistente.Ativo
+            );
+
             return Result.Ok(result);
         }
         catch (Exception ex)
         {
             await unitOfWork.RollbackAsync();
-            logger.LogError(ex, "Ocorreu um erro durante a edição do ticket {@Registro}.", command);
-            return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
+            logger.LogError(ex, "Erro durante a edição do ticket {@Registro}", command);
+            return Result.Fail($"Erro interno: {ex.Message}");
         }
     }
 }

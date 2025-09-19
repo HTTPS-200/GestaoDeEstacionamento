@@ -19,7 +19,7 @@ public record EditarTicketRequest(
 
 public record EditarTicketResponse(
     Guid Id,
-    Guid VeiculoId,
+    string PlacaVeiculo,
     string NumeroTicket,
     bool Ativo
 );

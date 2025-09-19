@@ -9,5 +9,6 @@ public interface IRepositorioTicket : IRepositorio<Ticket>
     Task<List<Ticket>> ObterPorVeiculoId(Guid veiculoId);
     Task<int> ObterUltimoNumeroSequencial();
     Task AtualizarUltimoNumeroSequencial(int ultimoNumero);
+    Task<Ticket?> SelecionarRegistroPorIdAsync(Guid idRegistro);
     Task<int> ObterMaiorNumeroSequencial();
 }

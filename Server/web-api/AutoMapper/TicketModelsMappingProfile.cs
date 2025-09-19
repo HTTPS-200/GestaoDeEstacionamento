@@ -12,14 +12,20 @@ public class TicketModelsMappingProfile : Profile
         CreateMap<CadastrarTicketRequest, CadastrarTicketCommand>();
         CreateMap<CadastrarTicketResult, CadastrarTicketResponse>();
 
-        CreateMap<(Guid, EditarTicketRequest), EditarTicketCommand>()
+        CreateMap<(Guid id, EditarTicketRequest request), EditarTicketCommand>()
             .ConvertUsing(src => new EditarTicketCommand(
-                src.Item1,
-                src.Item2.PlacaVeiculo,
-                src.Item2.Ativo
+                src.id,
+                src.request.PlacaVeiculo,
+                src.request.Ativo
             ));
 
-        CreateMap<EditarTicketResult, EditarTicketResponse>();
+        CreateMap<EditarTicketResult, EditarTicketResponse>()
+            .ConvertUsing(src => new EditarTicketResponse(
+                src.Id,
+                src.PlacaVeiculo,
+                src.NumeroTicket,
+                src.Ativo
+            ));
 
         CreateMap<Guid, ExcluirTicketCommand>()
             .ConstructUsing(src => new ExcluirTicketCommand(src));
