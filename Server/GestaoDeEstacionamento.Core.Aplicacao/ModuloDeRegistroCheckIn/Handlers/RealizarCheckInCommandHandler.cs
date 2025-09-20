@@ -82,7 +82,7 @@ public class RealizarCheckInCommandHandler(
                 registroCheckIn.Id,
                 veiculo.Id,
                 ticket.Id,
-                ticket.NumeroTicket, // ← Usa o número do ticket existente
+                ticket.NumeroTicket, 
                 registroCheckIn.DataHoraCheckIn
             );
 

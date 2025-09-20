@@ -18,7 +18,7 @@ public class CriarVagaCommandHandler(
     IUnitOfWork unitOfWork,
     IMapper mapper,
     IDistributedCache cache,
-    IValidator<Vaga> validator, // <-- agora valida Vaga diretamente
+    IValidator<Vaga> validator, 
     ILogger<CriarVagaCommandHandler> logger
 ) : IRequestHandler<CriarVagaCommand, Result<CriarVagaResult>>
 {
