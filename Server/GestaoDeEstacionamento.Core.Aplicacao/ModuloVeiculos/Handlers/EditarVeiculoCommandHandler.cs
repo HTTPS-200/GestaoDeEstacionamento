@@ -45,7 +45,6 @@ public class EditarVeiculoCommandHandler(
             await repositorioVeiculo.EditarAsync(command.Id, veiculoEditado);
             await unitOfWork.CommitAsync();
 
-            // Invalida o cache
             var cacheKey = $"veiculos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
             await cache.RemoveAsync(cacheKey, cancellationToken);
 

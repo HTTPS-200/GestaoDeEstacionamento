@@ -5,18 +5,23 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GestaoDeEstacionamento.WebApi.Controllers;
 
 [ApiController]
 [Authorize]
 [Route("api/vagas")]
-public class VagaController(IMediator mediator, IMapper mapper) : ControllerBase
+public class VagaController(IMediator mediator, IMapper mapper, ILogger<VagaController> logger) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<CriarVagaResponse>> Criar(CriarVagaRequest request)
     {
-        var command = mapper.Map<CriarVagaCommand>(request);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized();
+
+        var command = new CriarVagaCommand(request.Identificador, request.Zona, userId);
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
@@ -100,12 +105,19 @@ public class VagaController(IMediator mediator, IMapper mapper) : ControllerBase
     [HttpPost("{id:guid}/ocupar")]
     public async Task<ActionResult<OcuparVagaResponse>> Ocupar(Guid id, OcuparVagaRequest request)
     {
-        var command = new OcuparVagaCommand(id, request.VeiculoId);
+        logger.LogInformation("Recebida requisição para ocupar vaga {VagaId} com placa {PlacaVeiculo}",
+            id, request.PlacaVeiculo);
+
+        var command = new OcuparVagaCommand(id, request.PlacaVeiculo);
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
+        {
+            logger.LogWarning("Falha ao ocupar vaga: {Erros}", string.Join(", ", result.Errors));
             return BadRequest(result.Errors);
+        }
 
+        logger.LogInformation("Vaga ocupada com sucesso: {VagaId}", id);
         return Ok(mapper.Map<OcuparVagaResponse>(result.Value));
     }
 

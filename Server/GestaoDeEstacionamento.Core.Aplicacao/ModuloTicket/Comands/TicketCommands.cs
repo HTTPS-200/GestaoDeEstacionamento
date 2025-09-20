@@ -60,5 +60,5 @@ public record ObterTicketPorNumeroQuery(string NumeroTicket)
 public record ObterTicketsAtivosQuery()
     : IRequest<Result<SelecionarTicketsResult>>;
 
-public record ObterTicketsPorVeiculoQuery(string PlacaVeiculo)  // ← Mudado para placa
+public record ObterTicketsPorVeiculoQuery(string PlacaVeiculo) 
     : IRequest<Result<SelecionarTicketsResult>>;

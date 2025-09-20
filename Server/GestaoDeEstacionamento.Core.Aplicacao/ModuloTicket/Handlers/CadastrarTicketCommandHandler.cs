@@ -28,7 +28,6 @@ public class CadastrarTicketCommandHandler(
         CadastrarTicketCommand command,
         CancellationToken cancellationToken)
     {
-        // 1. Validação do comando
         var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
         if (!resultadoValidacao.IsValid)
         {
@@ -38,34 +37,29 @@ public class CadastrarTicketCommandHandler(
 
         try
         {
-            // 2. Busca veículo pela placa
             var veiculo = (await repositorioVeiculo.ObterPorPlaca(command.PlacaVeiculo)).FirstOrDefault();
             if (veiculo == null)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(
                     $"Veículo com placa {command.PlacaVeiculo} não encontrado"));
 
-            // 3. Verifica tickets ativos
             var ticketsAtivos = (await repositorioTicket.ObterPorVeiculoId(veiculo.Id)).Where(t => t.Ativo).ToList();
             if (ticketsAtivos.Any())
                 return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
                     $"Já existe um ticket ativo para o veículo com placa {command.PlacaVeiculo}"));
 
-            // 4. Calcula próximo número sequencial
+
             var maiorSequencial = await repositorioTicket.ObterMaiorNumeroSequencial();
             var proximoNumero = maiorSequencial + 1;
             var numeroTicket = proximoNumero.ToString("D6");
 
-            // 5. Cria ticket
             var ticket = new Ticket(numeroTicket, veiculo.Id, proximoNumero);
             ticket.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
 
             await repositorioTicket.CadastrarAsync(ticket);
             await unitOfWork.CommitAsync();
 
-            // 6. Invalida cache
             await InvalidarCaches(ticket.UsuarioId);
 
-            // 7. Retorna resultado
             return Result.Ok(new CadastrarTicketResult(ticket.Id, numeroTicket, veiculo.Placa));
         }
         catch (Exception ex)

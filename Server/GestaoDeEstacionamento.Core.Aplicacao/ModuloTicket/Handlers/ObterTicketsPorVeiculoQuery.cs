@@ -24,7 +24,6 @@ public class ObterTicketsPorVeiculoQueryHandler(
         {
             logger.LogInformation("Buscando tickets para o veículo com placa: {PlacaVeiculo}", query.PlacaVeiculo);
 
-            // Primeiro, busca o veículo pela placa
             var veiculos = await repositorioVeiculo.ObterPorPlaca(query.PlacaVeiculo);
 
             if (veiculos == null || !veiculos.Any())
@@ -37,14 +36,13 @@ public class ObterTicketsPorVeiculoQueryHandler(
 
             foreach (var veiculo in veiculos)
             {
-                // Busca os tickets para cada veículo encontrado
                 var tickets = await repositorioTicket.ObterPorVeiculoId(veiculo.Id);
 
                 foreach (var ticket in tickets)
                 {
                     var ticketDto = new SelecionarTicketsItemDto(
                         ticket.Id,
-                        veiculo.Placa, // Usa a placa do veículo encontrado
+                        veiculo.Placa, 
                         ticket.NumeroTicket,
                         ticket.DataCriacao,
                         ticket.Ativo

@@ -48,12 +48,14 @@ public record ObterVagaItemResponse(
     Guid? VeiculoId
 );
 
-public record OcuparVagaRequest(Guid VeiculoId);
+public record OcuparVagaRequest(string PlacaVeiculo);
+
 public record OcuparVagaResponse(
     Guid VagaId,
     string Identificador,
     bool Ocupada,
-    Guid VeiculoId
+    Guid VeiculoId,
+    string PlacaVeiculo
 );
 
 public record LiberarVagaResponse(

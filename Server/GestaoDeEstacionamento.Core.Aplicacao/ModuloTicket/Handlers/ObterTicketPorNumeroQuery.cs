@@ -33,7 +33,6 @@ public class ObterTicketPorNumeroQueryHandler(
 
             logger.LogInformation("Ticket encontrado. Buscando veículo com ID: {VeiculoId}", registro.VeiculoId);
 
-            // Use o método específico do repositório de veículo
             var veiculo = await repositorioVeiculo.ObterPorId(registro.VeiculoId);
             var placa = veiculo?.Placa ?? "Placa não encontrada";
 

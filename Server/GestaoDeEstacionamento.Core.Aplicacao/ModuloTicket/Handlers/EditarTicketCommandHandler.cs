@@ -39,7 +39,6 @@ public class EditarTicketCommandHandler(
             if (ticketExistente == null)
                 return Result.Fail("Ticket não encontrado.");
 
-            // Se veio placa → busca e atualiza o veículo vinculado
             if (!string.IsNullOrWhiteSpace(command.PlacaVeiculo))
             {
                 var veiculos = await repositorioVeiculo.ObterPorPlaca(command.PlacaVeiculo);
@@ -53,13 +52,11 @@ public class EditarTicketCommandHandler(
                 ticketExistente.VeiculoId = veiculos.First().Id;
             }
 
-            // Atualiza status ativo
             ticketExistente.Ativo = command.Ativo;
 
             await repositorioTicket.EditarAsync(command.Id, ticketExistente);
             await unitOfWork.CommitAsync();
 
-            // Invalida cache
             var cacheKey = $"tickets:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
             await cache.RemoveAsync(cacheKey, cancellationToken);
 

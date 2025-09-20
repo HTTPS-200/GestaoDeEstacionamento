@@ -27,7 +27,6 @@ public class SelecionarVeiculosQueryHandler(
             var cacheQuery = query.Quantidade.HasValue ? $"q={query.Quantidade.Value}" : "q=all";
             var cacheKey = $"veiculos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:{cacheQuery}";
 
-            // 1) Tenta acessar o cache
             var jsonString = await cache.GetStringAsync(cacheKey, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(jsonString))
@@ -37,14 +36,12 @@ public class SelecionarVeiculosQueryHandler(
                     return Result.Ok(resultadoEmCache);
             }
 
-            // 2) Cache miss -> busca no repositório
             var registros = query.Quantidade.HasValue ?
                 await repositorioVeiculo.SelecionarRegistrosAsync(query.Quantidade.Value) :
                 await repositorioVeiculo.SelecionarRegistrosAsync();
 
             var result = mapper.Map<SelecionarVeiculosResult>(registros);
 
-            // 3) Salva os resultados novos no cache
             var jsonPayload = JsonSerializer.Serialize(result);
             var cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) };
             await cache.SetStringAsync(cacheKey, jsonPayload, cacheOptions, cancellationToken);

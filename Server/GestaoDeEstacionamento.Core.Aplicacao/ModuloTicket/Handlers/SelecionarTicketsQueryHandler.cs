@@ -27,7 +27,6 @@ public class SelecionarTicketsQueryHandler(
             var cacheQuery = query.Quantidade.HasValue ? $"q={query.Quantidade.Value}" : "q=all";
             var cacheKey = $"tickets:u={tenantProvider.UsuarioId.GetValueOrDefault()}:{cacheQuery}";
 
-            // Tenta acessar o cache
             var jsonString = await cache.GetStringAsync(cacheKey, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(jsonString))
@@ -37,14 +36,12 @@ public class SelecionarTicketsQueryHandler(
                     return Result.Ok(resultadoEmCache);
             }
 
-            // Cache miss -> busca no repositório
             var registros = query.Quantidade.HasValue ?
                 await repositorioTicket.SelecionarRegistrosAsync(query.Quantidade.Value) :
                 await repositorioTicket.SelecionarRegistrosAsync();
 
             var result = mapper.Map<SelecionarTicketsResult>(registros);
 
-            // Salva no cache
             var jsonPayload = JsonSerializer.Serialize(result);
             var cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) };
             await cache.SetStringAsync(cacheKey, jsonPayload, cacheOptions, cancellationToken);

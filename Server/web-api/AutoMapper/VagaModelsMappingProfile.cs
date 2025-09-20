@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GestaoDeEstacionamento.Core.Aplicacao.ModuloVaga.Commands;
 using GestaoDeEstacionamento.WebApi.Models.ModuloVaga;
+using System.Collections.Immutable;
 
 namespace GestaoDeEstacionamento.WebApi.AutoMapper;
 
@@ -20,7 +21,15 @@ public class VagaModelsMappingProfile : Profile
         CreateMap<ObterVagaItemResult, ObterVagaItemResponse>();
 
         CreateMap<ObterTodasVagasResult, ObterTodasVagasResponse>()
-            .ForMember(dest => dest.Vagas, opt => opt.MapFrom(src => src.Vagas));
+            .ConvertUsing((src, dest, ctx) => new ObterTodasVagasResponse(
+                src.Vagas.Select(v => new ObterVagaItemResponse(
+                    v.Id,
+                    v.Identificador,
+                    v.Zona,
+                    v.Ocupada,
+                    v.VeiculoId
+                )).ToImmutableList()
+            ));
 
         CreateMap<OcuparVagaRequest, OcuparVagaCommand>()
             .ForMember(dest => dest.VagaId, opt => opt.Ignore());

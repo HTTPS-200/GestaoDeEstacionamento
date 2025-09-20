@@ -32,12 +32,11 @@ public class ObterTicketsAtivosQueryHandler(
                 return Result.Ok(new SelecionarTicketsResult([]));
             }
 
-            // Mapeia os tickets para o resultado
             var ticketsResult = new List<SelecionarTicketsItemDto>();
 
             foreach (var ticket in tickets)
             {
-                // Busca a placa do veículo para cada ticket
+
                 var veiculo = await repositorioVeiculo.ObterPorId(ticket.VeiculoId);
                 var placa = veiculo?.Placa ?? "Placa não encontrada";
 

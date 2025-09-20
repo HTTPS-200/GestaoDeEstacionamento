@@ -1,4 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using System.Diagnostics.CodeAnalysis;
 
 namespace GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
@@ -14,13 +15,14 @@ public class Vaga : EntidadeBase<Vaga>
     [ExcludeFromCodeCoverage]
     public Vaga() { }
 
-    public Vaga(string identificador, string zona)
+    public Vaga(string identificador, string zona, Guid usuarioId)
     {
         Id = Guid.NewGuid();
         Identificador = identificador;
         Zona = zona;
         Ocupada = false;
         VeiculoId = null;
+        UsuarioId = usuarioId;
     }
 
     public void Ocupar(Guid veiculoId)

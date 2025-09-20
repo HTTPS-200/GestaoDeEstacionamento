@@ -4,17 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga;
 
-public class RepositorioVagaEmOrm(AppDbContext contexto)
-    : RepositorioBaseEmOrm<Vaga>(contexto), IRepositorioVaga
+public class RepositorioVagaEmOrm : RepositorioBaseEmOrm<Vaga>, IRepositorioVaga
 {
-    public override async Task<List<Vaga>> SelecionarRegistrosAsync()
+    public RepositorioVagaEmOrm(AppDbContext contexto) : base(contexto)
     {
-        return await registros.ToListAsync();
-    }
-
-    public override async Task<Vaga?> SelecionarRegistroPorIdAsync(Guid idRegistro)
-    {
-        return await registros.FirstOrDefaultAsync(x => x.Id == idRegistro);
     }
 
     public async Task<List<Vaga>> ObterVagasLivres()

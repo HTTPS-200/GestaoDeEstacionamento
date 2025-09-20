@@ -36,7 +36,6 @@ public class CadastrarVeiculoCommandHandler(
 
         try
         {
-            // Log para debug
             logger.LogInformation("Iniciando cadastro de veículo: {@Command}", command);
 
             var veiculo = mapper.Map<Veiculo>(command);
@@ -50,7 +49,6 @@ public class CadastrarVeiculoCommandHandler(
             await unitOfWork.CommitAsync();
             logger.LogInformation("Commit realizado com sucesso");
 
-            // Invalida o cache
             var cacheKey = $"veiculos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
             await cache.RemoveAsync(cacheKey, cancellationToken);
 
@@ -62,7 +60,6 @@ public class CadastrarVeiculoCommandHandler(
             await unitOfWork.RollbackAsync();
             logger.LogError(ex, "Ocorreu um erro durante o registro do veículo {@Registro}.", command);
 
-            // Log mais detalhado do erro interno
             if (ex.InnerException != null)
             {
                 logger.LogError("Inner exception: {InnerException}", ex.InnerException.Message);

@@ -6,7 +6,8 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloVaga.Commands;
 
 public record CriarVagaCommand(
     string Identificador,
-    string Zona
+    string Zona,
+    Guid UsuarioId 
 ) : IRequest<Result<CriarVagaResult>>;
 
 public record CriarVagaResult(
@@ -62,14 +63,15 @@ public record ObterVagasOcupadasQuery() : IRequest<Result<ObterTodasVagasResult>
 
 public record OcuparVagaCommand(
     Guid VagaId,
-    Guid VeiculoId
+    string PlacaVeiculo
 ) : IRequest<Result<OcuparVagaResult>>;
 
 public record OcuparVagaResult(
     Guid VagaId,
     string Identificador,
     bool Ocupada,
-    Guid VeiculoId
+    Guid VeiculoId,
+    string PlacaVeiculo
 );
 
 public record LiberarVagaCommand(Guid VagaId) : IRequest<Result<LiberarVagaResult>>;

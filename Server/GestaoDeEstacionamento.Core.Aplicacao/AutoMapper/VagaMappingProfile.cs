@@ -9,7 +9,8 @@ public class VagaMappingProfile : Profile
 {
     public VagaMappingProfile()
     {
-        CreateMap<CriarVagaCommand, Vaga>();
+       CreateMap<CriarVagaCommand, Vaga>()
+            .ForMember(dest => dest.UsuarioId, opt => opt.MapFrom(src => src.UsuarioId));
 
         CreateMap<Vaga, CriarVagaResult>();
         CreateMap<Vaga, EditarVagaResult>();
