@@ -52,12 +52,12 @@ public class RealizarCheckInCommandHandler(
 
             // 2. Busca o ticket EXISTENTE para este veículo (não cria novo)
             var ticketsDoVeiculo = await repositorioTicket.ObterPorVeiculoId(veiculo.Id);
-            var ticket = ticketsDoVeiculo.FirstOrDefault();
+            var ticket = ticketsDoVeiculo.FirstOrDefault(t => t.Ativo); // ← Só tickets ATIVOS
 
             if (ticket == null)
             {
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(
-                    $"Não existe ticket para o veículo com placa {command.PlacaVeiculo}"));
+                    $"Não existe ticket ATIVO para o veículo com placa {command.PlacaVeiculo}. Crie um ticket primeiro."));
             }
 
             // 3. Verifica se já existe check-in ativo para este ticket

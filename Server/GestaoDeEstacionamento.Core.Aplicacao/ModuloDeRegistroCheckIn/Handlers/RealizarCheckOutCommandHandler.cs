@@ -4,6 +4,8 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
+using Microsoft.Extensions.Caching.Distributed;
+using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckOut.Commands;
 
@@ -14,19 +16,25 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
     private readonly IRepositorioTicket _repositorioTicket;
     private readonly IRepositorioVaga _repositorioVaga;
     private readonly IMediator _mediator;
+    private readonly IDistributedCache _cache;
+    private readonly IUnitOfWork _unitOfWork;
 
     public RealizarCheckOutCommandHandler(
         IRepositorioRegistroCheckIn repositorioCheckIn,
         IRepositorioVeiculo repositorioVeiculo,
         IRepositorioTicket repositorioTicket,
         IRepositorioVaga repositorioVaga,
-        IMediator mediator)
+        IMediator mediator,
+        IDistributedCache cache,
+        IUnitOfWork unitOfWork) 
     {
         _repositorioCheckIn = repositorioCheckIn;
         _repositorioVeiculo = repositorioVeiculo;
         _repositorioTicket = repositorioTicket;
         _repositorioVaga = repositorioVaga;
         _mediator = mediator;
+        _cache = cache;
+        _unitOfWork = unitOfWork; 
     }
 
     public async Task<Result<RealizarCheckOutResult>> Handle(RealizarCheckOutCommand request, CancellationToken cancellationToken)
@@ -60,14 +68,18 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
 
             var (diarias, valorTotal) = CalcularDiariasECusto(checkIn.DataHoraCheckIn, DateTime.UtcNow);
 
-            // Realizar as alterações
+            Console.WriteLine($"ANTES - Ticket Ativo: {ticket.Ativo}, VeiculoId: {ticket.VeiculoId}");
+
             checkIn.EncerrarCheckIn();
             veiculo.RegistrarSaida();
+            ticket.Encerrar();
+
+            Console.WriteLine($"DEPOIS - Ticket Ativo: {ticket.Ativo}, VeiculoId: {ticket.VeiculoId}");
 
             if (vaga != null)
                 vaga.Liberar();
 
-            // Atualizar registros
+            var ticketEditado = await _repositorioTicket.EditarAsync(ticket.Id, ticket);
             var checkInEditado = await _repositorioCheckIn.EditarAsync(checkIn.Id, checkIn);
             var veiculoEditado = await _repositorioVeiculo.EditarAsync(veiculo.Id, veiculo);
 
@@ -75,9 +87,12 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
             if (vaga != null)
                 vagaEditada = await _repositorioVaga.EditarAsync(vaga.Id, vaga);
 
-            // Verificar se todas as edições foram bem-sucedidas
-            if (!checkInEditado || !veiculoEditado || !vagaEditada)
+            await _unitOfWork.CommitAsync();
+
+            if (!checkInEditado || !veiculoEditado || !vagaEditada || !ticketEditado)
                 return Result.Fail("Falha ao atualizar registros no banco de dados");
+
+            await InvalidarCaches(veiculo.UsuarioId);
 
             return Result.Ok(new RealizarCheckOutResult(
                 checkIn.Id,
@@ -95,6 +110,7 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
         }
         catch (Exception ex)
         {
+            await _unitOfWork.RollbackAsync();
             return Result.Fail($"Erro ao realizar checkout: {ex.Message}");
         }
     }
@@ -117,4 +133,20 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
 
         return (diasCompletos, valorTotal);
     }
+
+    private async Task InvalidarCaches(Guid usuarioId)
+    {
+        var cacheKeys = new[]
+        {
+        $"veiculos:u={usuarioId}:q=all",
+        $"tickets:u={usuarioId}:q=all",
+        $"checkins:u={usuarioId}:q=all"
+    };
+
+        foreach (var cacheKey in cacheKeys)
+        {
+            await _cache.RemoveAsync(cacheKey);
+        }
+    }
+
 }

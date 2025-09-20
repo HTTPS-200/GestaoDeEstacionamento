@@ -32,7 +32,7 @@ public class RegistroCheckIn : EntidadeBase<RegistroCheckIn>
 
     public override void AtualizarRegistro(RegistroCheckIn registroEditado)
     {
-        //não editavel
+
        
     }
 

@@ -56,4 +56,6 @@ public class RepositorioTicketEmOrm(AppDbContext contexto)
  
         return await registros.MaxAsync(t => (int?)t.Sequencial) ?? 0;
     }
+
+
 }

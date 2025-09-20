@@ -42,10 +42,13 @@ public class CadastrarTicketCommandHandler(
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(
                     $"Veículo com placa {command.PlacaVeiculo} não encontrado"));
 
-            var ticketsAtivos = (await repositorioTicket.ObterPorVeiculoId(veiculo.Id)).Where(t => t.Ativo).ToList();
+            var ticketsAtivos = (await repositorioTicket.ObterPorVeiculoId(veiculo.Id))
+                 .Where(t => t.Ativo) 
+                 .ToList();
+
             if (ticketsAtivos.Any())
                 return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
-                    $"Já existe um ticket ativo para o veículo com placa {command.PlacaVeiculo}"));
+                    $"Já existe um ticket ativo para este veículo. Finalize o check-in atual primeiro."));
 
 
             var maiorSequencial = await repositorioTicket.ObterMaiorNumeroSequencial();
