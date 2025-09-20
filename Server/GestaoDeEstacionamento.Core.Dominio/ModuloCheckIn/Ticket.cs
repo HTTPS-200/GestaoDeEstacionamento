@@ -38,5 +38,6 @@ public class Ticket : EntidadeBase<Ticket>
     public void Encerrar()
     {
         Ativo = false;
+        VeiculoId = Guid.Empty;
     }
 }
