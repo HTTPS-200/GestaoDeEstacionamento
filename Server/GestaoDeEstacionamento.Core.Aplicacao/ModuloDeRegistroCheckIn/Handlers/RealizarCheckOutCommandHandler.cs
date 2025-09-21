@@ -6,6 +6,7 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using Microsoft.Extensions.Caching.Distributed;
 using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloFatura.Commands;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckOut.Commands;
 
@@ -87,11 +88,38 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
             if (vaga != null)
                 vagaEditada = await _repositorioVaga.EditarAsync(vaga.Id, vaga);
 
-            await _unitOfWork.CommitAsync();
-
+            // Verificar se todas as edições foram bem-sucedidas
             if (!checkInEditado || !veiculoEditado || !vagaEditada || !ticketEditado)
                 return Result.Fail("Falha ao atualizar registros no banco de dados");
 
+            // CRIAR FATURA APÓS CHECKOUT BEM-SUCEDIDO
+            var criarFaturaCommand = new CriarFaturaCommand(
+                checkIn.Id,
+                veiculo.Id,
+                ticket.Id,
+                ticket.NumeroTicket,
+                veiculo.Placa,
+                veiculo.Modelo,
+                veiculo.Cor,
+                veiculo.CPFHospede,
+                vaga?.Identificador,
+                vaga?.Zona,
+                checkIn.DataHoraCheckIn,
+                DateTime.UtcNow,
+                diarias,
+                50.00m, // Valor configurável da diária
+                valorTotal
+            );
+
+            var faturaResult = await _mediator.Send(criarFaturaCommand, cancellationToken);
+
+            if (faturaResult.IsFailed)
+            {
+                await _unitOfWork.RollbackAsync();
+                return Result.Fail("Falha ao criar fatura: " + string.Join(", ", faturaResult.Errors));
+            }
+
+            await _unitOfWork.CommitAsync();
             await InvalidarCaches(veiculo.UsuarioId);
 
             return Result.Ok(new RealizarCheckOutResult(

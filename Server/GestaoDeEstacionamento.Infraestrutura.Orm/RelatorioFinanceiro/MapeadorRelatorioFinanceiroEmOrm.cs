@@ -1,5 +1,5 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
-using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloFatura;
+using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

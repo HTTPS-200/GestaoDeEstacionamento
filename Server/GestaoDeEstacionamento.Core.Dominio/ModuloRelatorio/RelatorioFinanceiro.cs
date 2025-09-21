@@ -1,5 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
+using GestaoDeEstacionamento.Core.Dominio.ModuloFatura;
 using System;
 using System.Collections.Generic;
 using System.Linq;

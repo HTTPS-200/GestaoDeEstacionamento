@@ -1,5 +1,4 @@
-﻿using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
-using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
+﻿using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

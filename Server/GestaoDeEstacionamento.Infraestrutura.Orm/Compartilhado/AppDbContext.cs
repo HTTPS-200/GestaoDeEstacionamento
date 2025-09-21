@@ -1,6 +1,5 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
-using GestaoDeEstacionamento.Core.Dominio.ModuloFaturamento;
 using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +14,7 @@ using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using GestaoDeEstacionamento.Core.Dominio.ModuloFatura;
 
 namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 {
