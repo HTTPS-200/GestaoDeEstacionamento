@@ -1,17 +1,12 @@
 ﻿using DotNet.Testcontainers.Containers;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloCheckIn;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloRelatorio;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga;
 using Testcontainers.PostgreSql;
 using FizzWare.NBuilder;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVeiculo;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloTicket;
-using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFatura;
@@ -26,7 +21,6 @@ namespace GestaoDeEstacionamento.Tests.Integracao.Compartilhado
         protected AppDbContext? dbContext;
         protected RepositorioRegistroCheckInEmOrm? repositorioCheckIn;
         protected RepositorioFaturaEmOrm? repositorioFatura;
-        protected RepositorioSaidaEmOrm? repositorioSaida;
         protected RepositorioVagaEmOrm? repositorioVaga;
         protected RepositorioVeiculoEmOrm? repositorioVeiculo;
         protected RepositorioTicketEmOrm? repositorioTicket;
@@ -66,16 +60,12 @@ namespace GestaoDeEstacionamento.Tests.Integracao.Compartilhado
 
             repositorioCheckIn = new RepositorioRegistroCheckInEmOrm(dbContext);
             repositorioFatura = new RepositorioFaturaEmOrm(dbContext);
-            repositorioSaida = new RepositorioSaidaEmOrm(dbContext);
             repositorioVaga = new RepositorioVagaEmOrm(dbContext);
             repositorioVeiculo = new RepositorioVeiculoEmOrm(dbContext);
             repositorioTicket = new RepositorioTicketEmOrm(dbContext);
 
             BuilderSetup.SetCreatePersistenceMethod<Fatura>(async x => await repositorioFatura.CadastrarAsync(x));
             BuilderSetup.SetCreatePersistenceMethod<IList<Fatura>>(async x => await repositorioFatura.CadastrarEntidades(x));
-
-            BuilderSetup.SetCreatePersistenceMethod<Saida>(async x => await repositorioSaida.CadastrarAsync(x));
-            BuilderSetup.SetCreatePersistenceMethod<IList<Saida>>(async x => await repositorioSaida.CadastrarEntidades(x));
 
             BuilderSetup.SetCreatePersistenceMethod<RegistroCheckIn>(async x => await repositorioCheckIn.CadastrarAsync(x));
             BuilderSetup.SetCreatePersistenceMethod<IList<RegistroCheckIn>>(async x => await repositorioCheckIn.CadastrarEntidades(x));
@@ -96,8 +86,6 @@ namespace GestaoDeEstacionamento.Tests.Integracao.Compartilhado
             dbContext.Database.EnsureCreated();
 
             dbContext.Fatura.RemoveRange(dbContext.Fatura);
-            dbContext.Saida.RemoveRange(dbContext.Saida);
-            dbContext.RelatorioFinanceiro.RemoveRange(dbContext.RelatorioFinanceiro);
             dbContext.Tickets.RemoveRange(dbContext.Tickets);
             dbContext.RegistrosCheckIn.RemoveRange(dbContext.RegistrosCheckIn);
             dbContext.Vaga.RemoveRange(dbContext.Vaga);

@@ -2,7 +2,6 @@
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
@@ -19,7 +18,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<Fatura> Fatura { get; set; }
-        public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
         public DbSet<Ticket> Tickets { get; set; } = null!;
         public DbSet<RegistroCheckIn> RegistrosCheckIn { get; set; } = null!;
         public DbSet<Vaga> Vaga { get; set; }
@@ -40,9 +38,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 
                 modelBuilder.Entity<RegistroCheckIn>()
                     .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
-
-                modelBuilder.Entity<RelatorioFinanceiro>()
-                     .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Veiculo>()
              .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
