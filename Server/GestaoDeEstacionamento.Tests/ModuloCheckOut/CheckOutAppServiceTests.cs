@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentResults;
 using GestaoDeEstacionamento.Core.Aplicacao.ModuloCheckOut.Commands;
+using GestaoDeEstacionamento.Core.Aplicacao.ModuloFatura.Commands;
 using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
@@ -43,25 +44,42 @@ namespace GestaoDeEstacionamento.TestsUnitarios.ModuloCheckOut
         [TestMethod]
         public async Task Deve_Realizar_CheckOut_Valido()
         {
+            // Arrange
             var veiculo = new Veiculo("ABC123", "Ford", "Ka", "Preto", "12345678901");
-            var ticket = new Ticket(
-                numeroTicket: "ABC123-0001", 
-                veiculoId: veiculo.Id,
-                sequencial: 1
-            );
+            var ticket = new Ticket(numeroTicket: "ABC123-0001", veiculoId: veiculo.Id, sequencial: 1);
             var checkIn = new RegistroCheckIn(veiculo, ticket);
-
-            repositorioVeiculo.Setup(x => x.ObterPorPlaca(It.IsAny<string>()))
+            var vaga = new Vaga
+            {
+                Id = Guid.NewGuid(),
+                VeiculoId = veiculo.Id,
+                Identificador = "V01",
+                Zona = "A"
+            };
+            repositorioVeiculo.Setup(x => x.ObterPorPlaca(veiculo.Placa))
                 .ReturnsAsync(new List<Veiculo> { veiculo });
+
             repositorioCheckIn.Setup(x => x.ObterCheckInsPorVeiculoId(veiculo.Id))
                 .ReturnsAsync(new List<RegistroCheckIn> { checkIn });
-            repositorioVaga.Setup(x => x.ObterPorVeiculoId(veiculo.Id))
-    .ReturnsAsync(new GestaoDeEstacionamento.Core.Dominio.ModuloVaga.Vaga());
 
             repositorioTicket.Setup(x => x.SelecionarRegistroPorIdAsync(checkIn.Ticket.Id))
                 .ReturnsAsync(ticket);
-            mediator.Setup(x => x.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()))
+
+            repositorioVaga.Setup(x => x.ObterPorVeiculoId(veiculo.Id))
+                .ReturnsAsync(vaga);
+
+            repositorioTicket.Setup(x => x.EditarAsync(ticket.Id, ticket))
+                .ReturnsAsync(true);
+            repositorioCheckIn.Setup(x => x.EditarAsync(checkIn.Id, checkIn))
+                .ReturnsAsync(true);
+            repositorioVeiculo.Setup(x => x.EditarAsync(veiculo.Id, veiculo))
+                .ReturnsAsync(true);
+            repositorioVaga.Setup(x => x.EditarAsync(vaga.Id, vaga))
+                .ReturnsAsync(true);
+
+            mediator.Setup(x => x.Send(It.IsAny<CriarFaturaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Ok());
+
+            unitOfWork.Setup(x => x.CommitAsync()).Returns(Task.CompletedTask);
 
             var handler = new RealizarCheckOutCommandHandler(
                 repositorioCheckIn.Object,
@@ -73,12 +91,18 @@ namespace GestaoDeEstacionamento.TestsUnitarios.ModuloCheckOut
                 unitOfWork.Object
             );
 
-            var command = new RealizarCheckOutCommand("12345678901", "ABC123");
+            var command = new RealizarCheckOutCommand(veiculo.CPFHospede, veiculo.Placa);
+
+            // Act
             var result = await handler.Handle(command, CancellationToken.None);
 
+            // Assert
             Assert.IsTrue(result.IsSuccess);
             Assert.IsFalse(checkIn.Ativo);
             Assert.IsFalse(ticket.Ativo);
+            Assert.AreEqual(veiculo.Id, result.Value.VeiculoId);
+            Assert.AreEqual(ticket.NumeroTicket, result.Value.NumeroTicket);
+            Assert.AreEqual(vaga.Identificador, result.Value.Vaga?.Identificador);
         }
     }
 }
