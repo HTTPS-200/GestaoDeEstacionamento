@@ -9,4 +9,5 @@ public interface IRepositorioFatura : IRepositorio<Fatura>
     Task<List<Fatura>> ObterPorPeriodo(DateTime inicio, DateTime fim);
     Task<List<Fatura>> ObterPorVeiculoId(Guid veiculoId);
     Task<List<Fatura>> ObterNaoPagas();
+    Task<List<Fatura>> ObterPorPeriodo(DateTime inicio, DateTime fim, Guid usuarioId);
 }

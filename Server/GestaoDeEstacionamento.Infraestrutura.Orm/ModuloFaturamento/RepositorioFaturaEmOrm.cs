@@ -38,6 +38,15 @@ public class RepositorioFaturaEmOrm(AppDbContext contexto)
             .ToListAsync();
     }
 
+    public async Task<List<Fatura>> ObterPorPeriodo(DateTime inicio, DateTime fim, Guid usuarioId)
+    {
+        return await registros
+            .Where(f => f.UsuarioId == usuarioId &&
+                       f.DataHoraSaida >= inicio &&
+                       f.DataHoraSaida <= fim)
+            .ToListAsync();
+    }
+
     public async Task<List<Fatura>> ObterPorVeiculoId(Guid veiculoId)
     {
         return await registros
