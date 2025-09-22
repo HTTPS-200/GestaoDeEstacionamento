@@ -23,7 +23,7 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build ./server/GestaoDeEstacionamentos.sln --configuration Release
+        run: dotnet build ./GestaoDeEstacionamentos.sln --configuration Release
   
   test:
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
           dotnet-version: '8.x'
     
       - name: Run tests
-        run: dotnet test ./server/GestaoDeEstacionamentos.sln --configuration Release --verbosity normal
+        run: dotnet test ./GestaoDeEstacionamento.sln --configuration Release --verbosity normal
         env: 
           ASPNET_ENVIRONMENT: "GITHUB_ACTIONS"
           SQL_CONNECTION_STRING: ${{ secrets.SQL_CONNECTION_STRING }}
