@@ -4,7 +4,7 @@ using FluentValidation;
 using GestaoDeEstacionamento.Core.Aplicacao.Compartilhado;
 using GestaoDeEstacionamento.Core.Aplicacao.ModuloGestaoDeVagas.Command;
 using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloGestaoDeVagas;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

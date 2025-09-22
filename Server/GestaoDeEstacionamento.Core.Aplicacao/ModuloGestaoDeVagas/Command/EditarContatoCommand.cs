@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using GestaoDeEstacionamento.Core.Dominio.ModuloCheckIn;
+using GestaoDeEstacionamento.Core.Dominio.ModuloVeiculo;
 using MediatR;
 
 namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloGestaoDeVagas.Command;
