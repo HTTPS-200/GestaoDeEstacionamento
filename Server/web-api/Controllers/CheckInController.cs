@@ -42,15 +42,22 @@ public class CheckInController(IMediator mediator, IMapper mapper) : ControllerB
 
     [HttpGet]
     public async Task<ActionResult<SelecionarCheckInsResponse>> SelecionarCheckIns(
-        [FromQuery] SelecionarCheckInsRequest? request,
-        CancellationToken cancellationToken)
+       [FromQuery] int? Quantidade,
+       CancellationToken cancellationToken)
     {
-        var query = mapper.Map<SelecionarCheckInsQuery>(request);
+        var query = new SelecionarCheckInsQuery(Quantidade);
 
         var result = await mediator.Send(query, cancellationToken);
 
         if (result.IsFailed)
-            return BadRequest();
+        {
+            if (result.Errors.Any(e => e.Message.Contains("não encontrado") ||
+                                      e.Message.Contains("not found") ||
+                                      e.HasMetadataKey("TipoErro") && e.Metadata["TipoErro"] as string == "NotFound"))
+                return NotFound();
+
+            return BadRequest(result.Errors.Select(e => e.Message));
+        }
 
         var response = mapper.Map<SelecionarCheckInsResponse>(result.Value);
 

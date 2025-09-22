@@ -60,4 +60,6 @@ public class RepositorioFaturaEmOrm(AppDbContext contexto)
             .Where(f => !f.Pago)
             .ToListAsync();
     }
+
+
 }

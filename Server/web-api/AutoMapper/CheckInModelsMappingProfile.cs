@@ -17,6 +17,8 @@ public class CheckInModelsMappingProfile : Profile
 
         CreateMap<SelecionarCheckInsRequest, SelecionarCheckInsQuery>();
 
+        CreateMap<CoreCheckIn.SelecionarCheckInsDto, WebCheckIn.SelecionarCheckInsDto>();
+
         CreateMap<SelecionarCheckInsResult, SelecionarCheckInsResponse>()
             .ConvertUsing((src, dest, ctx) => new SelecionarCheckInsResponse(
                 src.CheckIns.Count,

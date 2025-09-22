@@ -9,7 +9,6 @@ public class FaturaModelsMappingProfile : Profile
 {
     public FaturaModelsMappingProfile()
     {
-        // Results para Responses
         CreateMap<CriarFaturaResult, CriarFaturaResponse>()
             .ConvertUsing((src, dest) => new CriarFaturaResponse(
                 src.Id,
@@ -72,7 +71,6 @@ public class FaturaModelsMappingProfile : Profile
                 src.Valor
             ));
 
-        // Collections para Responses
         CreateMap<ObterFaturasResult, ObterFaturasResponse>()
             .ConvertUsing((src, dest, ctx) =>
                 new ObterFaturasResponse(
@@ -94,7 +92,6 @@ public class FaturaModelsMappingProfile : Profile
                 )
             );
 
-        // Requests para Commands (para futuros endpoints POST)
         CreateMap<CriarFaturaRequest, CriarFaturaCommand>()
             .ConvertUsing((src, dest) => new CriarFaturaCommand(
                 src.CheckInId,
@@ -116,7 +113,7 @@ public class FaturaModelsMappingProfile : Profile
 
         CreateMap<MarcarFaturaComoPagaRequest, MarcarFaturaComoPagaCommand>()
             .ConvertUsing((src, dest) => new MarcarFaturaComoPagaCommand(
-                Guid.Empty // Será preenchido pelo controller
+                Guid.Empty 
             ));
     }
 }

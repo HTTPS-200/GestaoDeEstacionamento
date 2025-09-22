@@ -107,7 +107,7 @@ public class RealizarCheckOutCommandHandler : IRequestHandler<RealizarCheckOutCo
                 checkIn.DataHoraCheckIn,
                 DateTime.UtcNow,
                 diarias,
-                50.00m, // Valor configurável da diária
+                50.00m,
                 valorTotal
             );
 

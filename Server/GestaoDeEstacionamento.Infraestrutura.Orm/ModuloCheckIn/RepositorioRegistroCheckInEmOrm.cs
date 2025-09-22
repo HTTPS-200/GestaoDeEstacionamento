@@ -56,4 +56,20 @@ public class RepositorioRegistroCheckInEmOrm(AppDbContext contexto)
             .Where(x => x.VeiculoId == veiculoId)
             .ToListAsync();
     }
+
+    public new async Task<List<RegistroCheckIn>> ObterTodosAsync()
+    {
+        return await registros
+            .Include(x => x.Veiculo)
+            .Include(x => x.Ticket)
+            .ToListAsync();
+    }
+
+    public new async Task<RegistroCheckIn?> ObterPorIdAsync(Guid id)
+    {
+        return await registros
+            .Include(x => x.Veiculo)
+            .Include(x => x.Ticket)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
 }

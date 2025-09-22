@@ -10,7 +10,7 @@ namespace GestaoDeEstacionamento.Core.Aplicacao.ModuloFatura.Handlers;
 
 public class ObterRelatorioFaturamentoQueryHandler(
     IRepositorioFatura repositorioFatura,
-    ITenantProvider tenantProvider // ← Adicione o TenantProvider
+    ITenantProvider tenantProvider 
 ) : IRequestHandler<ObterRelatorioFaturamentoQuery, Result<ObterRelatorioFaturamentoResult>>
 {
     public async Task<Result<ObterRelatorioFaturamentoResult>> Handle(
