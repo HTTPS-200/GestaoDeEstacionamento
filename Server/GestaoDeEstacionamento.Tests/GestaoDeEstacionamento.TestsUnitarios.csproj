@@ -21,8 +21,4 @@
     <ProjectReference Include="..\GestaoDeEstacionamento.Core.Dominio\GestaoDeEstacionamento.Core.Dominio.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ModuloVaga\" />
-  </ItemGroup>
-
 </Project>
