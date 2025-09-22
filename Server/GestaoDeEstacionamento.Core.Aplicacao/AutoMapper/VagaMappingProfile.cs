@@ -18,7 +18,7 @@ public class VagaMappingProfile : Profile
         CreateMap<Vaga, ObterVagaItemResult>();
 
         CreateMap<IEnumerable<Vaga>, ObterTodasVagasResult>()
-            .ConvertUsing((src, dest, ctx) =>
+           .ConvertUsing((src, dest, ctx) =>
                 new ObterTodasVagasResult(
                     src?.Select(v => new ObterVagaItemResult(
                         v.Id,
@@ -28,7 +28,7 @@ public class VagaMappingProfile : Profile
                         v.VeiculoId
                     )).ToImmutableList()
                     ?? ImmutableList<ObterVagaItemResult>.Empty
-                )
-            );
+               )
+           );
     }
 }
