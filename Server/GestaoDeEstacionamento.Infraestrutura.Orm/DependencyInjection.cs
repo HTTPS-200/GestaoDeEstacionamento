@@ -1,14 +1,9 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
-using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloFaturamento;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVaga;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloSaidaLiberacao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
-using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloRelatorio;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Infraestrutura.Orm.ModuloVeiculo;
@@ -30,7 +25,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm
             services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
             services.AddScoped<IRepositorioFatura, RepositorioFaturaEmOrm>();
             services.AddScoped<IRepositorioVaga, RepositorioVagaEmOrm>();
-            services.AddScoped<IRepositorioSaida, RepositorioSaidaEmOrm>();
             services.AddScoped<IRepositorioTicket, RepositorioTicketEmOrm>();
             services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
             services.AddScoped<IRepositorioRegistroCheckIn, RepositorioRegistroCheckInEmOrm>();

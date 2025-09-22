@@ -1,13 +1,7 @@
 ﻿using GestaoDeEstacionamento.Core.Dominio.Compartilhado;
 using GestaoDeEstacionamento.Core.Dominio.ModuloAutenticacao;
-using GestaoDeEstacionamento.Core.Dominio.ModuloSaidaLiberacao;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GestaoDeEstacionamento.Core.Dominio.ModuloRelatorio;
 using GestaoDeEstacionamento.Core.Dominio.ModuloTicket;
 using GestaoDeEstacionamento.Core.Dominio.ModuloVaga;
@@ -25,7 +19,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<Fatura> Fatura { get; set; }
-        public DbSet<Saida> Saida { get; set; }
         public DbSet<RelatorioFinanceiro> RelatorioFinanceiro { get; set; }
         public DbSet<Ticket> Tickets { get; set; } = null!;
         public DbSet<RegistroCheckIn> RegistrosCheckIn { get; set; } = null!;
@@ -41,9 +34,6 @@ namespace GestaoDeEstacionamento.Infraestrutura.Orm.Compartilhado
 
                 modelBuilder.Entity<Vaga>()
                .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
-
-                modelBuilder.Entity<Saida>()
-                    .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
 
                 modelBuilder.Entity<Ticket>()
                .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
