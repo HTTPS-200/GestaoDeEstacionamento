@@ -23,7 +23,7 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build ./GestaoDeEstacionamentos.sln --configuration Release
+        run: dotnet build ./GestaoDeEstacionamento.sln --configuration Release
   
   test:
     runs-on: ubuntu-latest
