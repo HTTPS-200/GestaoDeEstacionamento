@@ -39,8 +39,8 @@ jobs:
         with:
           dotnet-version: '8.x'
     
-      - name: Run tests
-        run: dotnet test ./GestaoDeEstacionamento.sln --configuration Release --verbosity normal
+      - name: Run all tests
+        run: dotnet test Server/GestaoDeEstacionamento.sln --configuration Release
         env: 
           ASPNET_ENVIRONMENT: "GITHUB_ACTIONS"
           SQL_CONNECTION_STRING: ${{ secrets.SQL_CONNECTION_STRING }}
